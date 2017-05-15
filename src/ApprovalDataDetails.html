@@ -1,0 +1,55 @@
+<html lang="ja">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>データ提供リクエスト</title>
+    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.1/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.1/js/bootstrap.min.js"></script>
+    <script src="./js/ApprovalDataDetails.js"></script>
+    <script src="./js/common.js"></script>
+    <link href="https://fonts.googleapis.com/css?family=Raleway:400,200" rel="stylesheet" type="text/css">
+    <link href="./css/common.css" rel="stylesheet" type="text/css">
+    <link href="./css/request.css" rel="stylesheet" type="text/css">
+</head>
+
+<body>
+    <header>
+        <a href="./LLMessage.html">
+            <img id="imBack" src="./img/parts_ico_back.png" alt="user">
+        </a>
+        <h1 id="requestTitle"></h1>
+        <a href="#" onclick="cm.openSlide();">
+            <img id="menuIcon" src="./img/parts_menu.png">
+        </a>
+    </header>
+
+    <div class="app-info">
+        <div class="app-icon">
+            <img id="requestIcon" width="24" height="24">
+        </div>
+        <div class="app-data">
+            <div id="requestName"></div>
+            <div><span style="color: red;">★★★</span><span>☆☆</span></div>
+        </div>
+        <div class="sizeCaption" id="consenteesNumber"></div>
+    </div>
+  <!-- /app-info -->
+
+    <img style="max-width: 100%;" id="randomImage"/>
+
+    <section class="border-seperator" id="requestText">
+    </section>
+
+    <section class="border-seperator" id="requestUse">
+    </section>
+
+    <section id="providedInfo">
+        <div class="request-btn-area">
+        <button class="round-btn negative" id="rejectRequest">提供をやめる</button>
+        </div>
+    </section>
+
+</body>
+</html>

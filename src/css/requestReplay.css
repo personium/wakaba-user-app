@@ -1,0 +1,84 @@
+
+*{
+    font-family: 'Raleway', sans-serif;
+    color : #FFF;
+}
+
+
+div h3 span.small{
+     color : #FFF;
+     font-size:14px;
+}
+
+h1{
+     font-weight: 300;
+     margin-bottom: 44px;
+}
+
+h4{
+     font-weight: 300;
+     color : #000;
+}
+
+.form-control:focus{
+    border-radius: 40px;
+    outline: none;
+    border: none;
+    /*-webkit-box-shadow: none !important;
+    -moz-box-shadow: none !important;
+    box-shadow: none !important;*/
+}
+.accept_btn{
+    background-color:#B7DBFF !important;
+    border: 1px solid rgba(255, 255, 255, 100);
+    border-radius: 40px;
+    margin: 5px;
+    padding: 5px;
+    width: 100%;
+    outline: none;
+    font-size: 16px;
+    color: #7F7FFF;
+    font-weight: inherit;
+}
+
+.reject_btn{
+    background-color:#FFB7B7 !important;
+    border: 1px solid rgba(255, 255, 255, 100);
+    border-radius: 40px;
+    margin: 5px;
+    padding: 5px;
+    width: 100%;
+    outline: none;
+    font-size: 16px;
+    color: #FF7F7F;
+    font-weight: inherit;
+}
+
+.version_area {
+    font-size: 11px;
+    margin-top: 30px;
+    margin-left: 16px;
+    margin-bottom: 11px;
+}
+
+.version_area p {
+    margin: 0px;
+}
+
+.login_control {
+    position: relative;
+}
+
+.outter{
+    /*margin-top:80px;*/
+    margin-bottom:8px;
+}
+
+.fontBlack {
+    color: #000000 !important;
+    font-weight: inherit !important;
+}
+
+#providedInfo{
+     color : #000;
+}

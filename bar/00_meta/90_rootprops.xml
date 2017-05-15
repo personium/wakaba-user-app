@@ -1,0 +1,25 @@
+<multistatus xmlns="DAV:">
+    <response>
+        <href>dcbox:/</href>
+        <propstat>
+            <prop>
+                <resourcetype>
+                    <collection/>
+                </resourcetype>
+                <acl xml:base="https://demo.personium.io/hn-ll-user-app/__role/__/" xmlns:p="urn:x-dcl:xmlns">
+                    <ace>
+                        <principal>
+                            <all/>
+                        </principal>
+                        <grant>
+                            <privilege>
+                                <read/>
+                            </privilege>
+                        </grant>
+                    </ace>
+                </acl>
+                <Z:Author xmlns:p="urn:x-dcl:xmlns" xmlns:D="DAV:" xmlns:Z="http://www.w3.com/standards/z39.50/">Test User1</Z:Author>
+            </prop>
+        </propstat>
+    </response>
+</multistatus>

@@ -1,0 +1,16 @@
+section .sizeCaption {
+  margin: 0 16px;
+}
+.app-info-table {
+  margin: 16px;
+  font-size: 14px;
+}
+.app-info-table th {
+  color: #6d6d6d;
+  font-weight: normal;
+}
+.app-info-table th,
+.app-info-table td {
+  padding: 4px 0;
+  padding-right: 32px;
+}

@@ -1,0 +1,291 @@
+/* フォントサイズ一覧 */
+.sizeHeadline {
+  font-size: ;
+}
+.sizeTitle {
+  font-size: ;
+}
+.sizeBody {
+  font-size: 16px;
+}
+.sizeCaption {
+  font-size: 14px;
+}
+.sizeCaption2 {
+  font-size: 10px;
+}
+
+/* 見出し */
+/* h1 ページタイトルのみ */
+header > h1 {
+  flex: 1 1 auto;
+  margin: 0;
+  font-size: 24px;
+  font-weight: normal;
+  text-align: center;
+}
+/* h2 通常項目見出し */
+h2 {
+  margin: 20px 16px;
+  font-size: 20px;
+  color: #8a92a8;
+}
+/* サブ見出し */
+h3 {
+  margin: 20px 16px 16px;
+  font-size: 16px;
+}
+
+/* セクション */
+section {
+  clear: both;
+  /* border-top: 1px solid #d4d4d4; */
+  /* border-bottom: 1px solid #d4d4d4; */
+}
+section + section {
+  border-top: 0 none;
+}
+.section-seperator {
+  border-top: 20px solid #ededed;
+}
+.section-seperator::before {
+  content: "";
+  display: block;
+  width: 100%;
+  height: 1px;
+  background-color: #d4d4d4;
+}
+.border-seperator {
+}
+.border-seperator::after {
+  content: "";
+  display: block;
+  height: 1px;
+  margin: 20px 16px 20px;
+  background-color: #d4d4d4;
+}
+section .sizeCaption {
+  /* margin: 0 16px; */
+}
+
+/* リスト */
+ul,
+li {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+/* ヘッダー */
+header {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  width: 100%;
+  padding: 32px 0 14px;
+  background-color: #4ab242;
+  color: #ffffff;
+  font-size: 16px;
+}
+header > * {
+  flex: 0 0 auto;
+  padding: 0 8px;
+}
+header > *:first-child {
+  padding-left: 16px;
+}
+header > *:last-child {
+  padding-right: 16px;
+}
+header > a {
+  align-self: stretch;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+}
+header > h1 {
+  flex: 1 1 auto;
+  margin: 0;
+  font-size: 24px;
+  font-weight: normal;
+  text-align: center;
+}
+
+#imBack,
+#menuIcon {
+  width: 32px;
+  height: 32px;
+}
+.header-body {
+  flex: 1 1 auto;
+}
+/* リスト */
+.list {
+  /* border-top: 1px solid #d4d4d4; */
+}
+.list > li {
+  border-bottom: 1px solid #d4d4d4;
+}
+.list > li:last-child {
+}
+.list > li > a {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  padding: 16px 20px;
+  padding-right: 32px;
+  background-image: url("../img/parts_list.png");
+  background-position: center right;
+  background-size: 24px;
+  background-repeat: no-repeat;
+  color: #333333;
+}
+.list > li > a > * {
+  flex: 0 0 auto;
+}
+
+.info-icon img {
+  width: 40px;
+  height: 40px;
+}
+.list > li > a > .list-body {
+  flex: 1 1 auto;
+  margin: 0 16px;
+  overflow: hidden;
+}
+.list-body .sizeBody {
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  overflow: hidden;
+}
+.list-body .sizeCaption {
+  color: #6d6d6d;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  overflow: hidden;
+}
+.list-readmore {
+  display: block;
+  margin: 12px 0;
+  padding: 8px;
+  text-align: center;
+  color: #333333;
+}
+
+/* アプリ情報 */
+.app-info {
+  display: flex;
+  flex-direction: row;
+  margin: 20px 16px;
+}
+.app-info > * {
+  flex: 0 0 auto;
+}
+.app-info .app-icon {
+  width: 44px;
+  height: 44px;
+  margin-right: 8px;
+}
+.app-info .app-icon img {
+  width: inherit;
+  height: inherit;
+}
+.app-info .app-data {
+  flex: 1 1 auto;
+}
+
+/* コントロール関連 */
+input[type="checkbox"],
+input[type="radio"] {
+    display: none;
+}
+input[type="checkbox"] + label,
+input[type="radio"] + label {
+    display: inline-block;
+    position: relative;
+    padding: 10px;
+    padding-left: 40px;
+    cursor: pointer;
+}
+input[type="checkbox"] + label::before,
+input[type="radio"] + label::before {
+    content: "";
+    display: block;
+    position: absolute;
+    top: 50%;
+    left: 20px;
+    margin-top: -8px;
+    margin-left: -8px;
+    width: 16px;
+    height: 16px;
+    background-color: #ffffff;
+    border: 1px solid #cccccc;
+}
+input[type="checkbox"] + label::after,
+input[type="radio"] + label::after {
+    content: "";
+    display: none;
+    position: absolute;
+    top: 50%;
+    left: 20px;
+}
+input[type="checkbox"] + label::after{
+    border: 2px solid #ffffff;
+    border-top: 0 none transparent;
+    border-right: 0 none transparent;
+    margin-top: -5px;
+    margin-left: -5px;
+    width: 10px;
+    height: 6px;
+    transform: rotate(-45deg);
+}
+input[type="radio"] + label::after {
+    margin-top: -4px;
+    margin-left: -4px;
+    width: 10px;
+    height: 10px;
+    background-color: #3b73b7;
+}
+input[type="checkbox"] + label::before {
+  border-radius: 3px;
+}
+input[type="checkbox"]:checked + label::before {
+  background-color: #113672;
+  border-color: #113672;
+}
+
+input[type="checkbox"]:checked + label::after,
+input[type="radio"]:checked + label::after {
+  display: block;
+}
+input[type="radio"] + label::before,
+input[type="radio"] + label::after {
+  border-radius: 50%;
+}
+
+/* 箇条書き */
+.itemization {
+  margin: 0 16px 40px 32px;
+}
+.itemization li {
+  list-style: disc;
+}
+
+/* ラウンドボタン */
+.round-btn {
+  width: 288px;
+  height: 40px;
+  padding: 0 16px;
+  margin-bottom: 16px;
+  background-color: #4ab242;
+  border: 0 none;
+  border-radius: 20px;
+  color: #ffffff;
+  outline: 0;
+}
+.round-btn.negative {
+  background-color: #db4444;
+}
+.request-btn-area {
+  text-align: center;
+}
