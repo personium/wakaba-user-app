@@ -150,18 +150,9 @@ rr.getReceiveMessage = function() {
                 console.log(response.responseJSON.code);
                 console.log(JSON.stringify(response));
                 if ( response.responseJSON.code == "PR400-RM-0001" ) {
-                    var ackBody = {};
-                    ackBody.Command = "rejected";
-                    rr.requestReplay(ackBody).done(function(){
-                        var replayMessage = JSON.parse(sessionStorage.getItem("RRreplayMassage"));
-                        replayMessage.Body = "データ提供依頼承認済みです";
-                        rr.sendReplay(replayMessage).done(function(){
-                            alert("データ提供依頼承認済みです");
-                            location.href = "./LLMessage.html";
-                        });
-                    });
+                    alert("データ提供依頼承認済みです");
+                    location.href = "./LLMessage.html";
                 } else {
-                    console.log(JSON.stringify(response));
                     alert("データ提供依頼の回答に失敗しました\n" + JSON.stringify(response));
                     location.href = "./LLMessage.html";
                 }
