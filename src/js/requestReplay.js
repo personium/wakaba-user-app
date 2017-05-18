@@ -165,7 +165,7 @@ rr.getReceiveMessage = function() {
             ackBody.Command = "rejected";
             rr.requestReplay(ackBody).done(function(){
                 var replayMessage = JSON.parse(sessionStorage.getItem("RRreplayMassage"));
-                replayMessage.Body = "データ提供依頼が拒否されました";
+                replayMessage.Body = "データ提供がキャンセルされました";
                 rr.sendReplay(replayMessage).done(function(){
                     alert("データ提供依頼を拒否しました");
                     location.href = "./LLMessage.html";
