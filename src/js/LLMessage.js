@@ -59,7 +59,7 @@ $(document).ready(function() {
     lm.getReceiveMessage();
     }
 
-    //Common.setIdleTime();
+    Common.setIdleTime();
 });
 
 lm.checkParam = function() {
