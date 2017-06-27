@@ -88,7 +88,7 @@ Common.refreshToken = function() {
 Common.refreshTokenAPI = function() {
     return $.ajax({
         type: "POST",
-        url: Common.cellUrl + '__auth',
+        url: Common.cellUrl + '__token',
         processData: true,
         dataType: 'json',
         data: {
@@ -102,7 +102,7 @@ Common.refreshTokenAPI = function() {
 Common.getTargetToken = function(extCellUrl) {
   return $.ajax({
                 type: "POST",
-                url: Common.cellUrl + '__auth',
+                url: Common.cellUrl + '__token',
                 processData: true,
 		dataType: 'json',
                 data: {
