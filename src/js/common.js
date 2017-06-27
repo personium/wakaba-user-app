@@ -15,17 +15,19 @@ Common.setIdleTime = function() {
     // Create Session Expired Modal
     Common.createSessionExpired();
 
-    Common.refreshTokenAPI().done(function(data) {
-        Common.token = data.access_token;
-        Common.refToken = data.refresh_token;
-        Common.expires = data.expires_in;
-        Common.refExpires = data.refresh_token_expires_in;
-        sessionStorage.setItem("ISToken", data.access_token);
-        sessionStorage.setItem("ISRefToken", data.refresh_token);
-        sessionStorage.setItem("ISExpires", data.expires_in);
-        sessionStorage.setItem("ISRefExpires", data.refresh_token_expires_in);
-    }).fail(function(data) {
-        $('#modal-session-expired').modal('show');
+    Common.appGetTargetToken().done(function(appToken) {
+        Common.refreshTokenAPI(appToken.access_token).done(function(data) {
+            Common.token = data.access_token;
+            Common.refToken = data.refresh_token;
+            Common.expires = data.expires_in;
+            Common.refExpires = data.refresh_token_expires_in;
+            sessionStorage.setItem("ISToken", data.access_token);
+            sessionStorage.setItem("ISRefToken", data.refresh_token);
+            sessionStorage.setItem("ISExpires", data.expires_in);
+            sessionStorage.setItem("ISRefExpires", data.refresh_token_expires_in);
+        }).fail(function(data) {
+            $('#modal-session-expired').modal('show');
+        });
     });
 
     setInterval(Common.checkIdleTime, 3300000);
@@ -73,19 +75,21 @@ Common.checkIdleTime = function() {
 };
 
 Common.refreshToken = function() {
-    Common.refreshTokenAPI().done(function(data) {
-        Common.token = data.access_token;
-        Common.refToken = data.refresh_token;
-        Common.expires = data.expires_in;
-        Common.refExpires = data.refresh_token_expires_in;
-        sessionStorage.setItem("ISToken", data.access_token);
-        sessionStorage.setItem("ISRefToken", data.refresh_token);
-        sessionStorage.setItem("ISExpires", data.expires_in);
-        sessionStorage.setItem("ISRefExpires", data.refresh_token_expires_in);
+    Common.appGetTargetToken().done(function(appToken) {
+        Common.refreshTokenAPI(appToken.access_token).done(function(data) {
+            Common.token = data.access_token;
+            Common.refToken = data.refresh_token;
+            Common.expires = data.expires_in;
+            Common.refExpires = data.refresh_token_expires_in;
+            sessionStorage.setItem("ISToken", data.access_token);
+            sessionStorage.setItem("ISRefToken", data.refresh_token);
+            sessionStorage.setItem("ISExpires", data.expires_in);
+            sessionStorage.setItem("ISRefExpires", data.refresh_token_expires_in);
+        });
     });
 };
 
-Common.refreshTokenAPI = function() {
+Common.refreshTokenAPI = function(appCellToken) {
     return $.ajax({
         type: "POST",
         url: Common.cellUrl + '__token',
@@ -93,11 +97,29 @@ Common.refreshTokenAPI = function() {
         dataType: 'json',
         data: {
                grant_type: "refresh_token",
-               refresh_token: Common.refToken
+               refresh_token: Common.refToken,
+               client_id: "https://demo.personium.io/hn-ll-user-app/",
+               client_secret: appCellToken
         },
         headers: {'Accept':'application/json'}
     })
 };
+
+Common.appGetTargetToken = function() {
+  return $.ajax({
+                type: "POST",
+                url: 'https://demo.personium.io/hn-ll-user-app/__token',
+                processData: true,
+		dataType: 'json',
+                data: {
+                        grant_type: "password",
+			username: "tokenAcc",
+			password: "personiumtoken",
+                        p_target: Common.cellUrl
+                },
+		headers: {'Accept':'application/json'}
+         });
+}
 
 Common.getTargetToken = function(extCellUrl) {
   return $.ajax({
