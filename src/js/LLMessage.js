@@ -17,6 +17,30 @@ lm.getName = function(path) {
 };
 
 $(document).ready(function() {
+    i18next
+    .use(i18nextXHRBackend)
+    .use(i18nextBrowserLanguageDetector)
+    .init({
+        fallbackLng: 'en',
+        ns: ['common', 'glossary', 'llmessage'],
+        defaultNS: 'common',
+        debug: true,
+        backend: {
+            // load from i18next-gitbook repo
+            loadPath: './locales/{{lng}}/{{ns}}.json',
+            crossDomain: true
+        }
+    }, function(err, t) {
+        Common.initJqueryI18next();
+        
+        Common.createSessionExpired();
+        lm.additionalCallback();
+        
+        Common.updateContent();
+    });
+});
+
+lm.additionalCallback = function() {
     var appUrlMatch = location.href.split("#");
     var appUrlSplit = appUrlMatch[0].split("/");
     lm.appUrl = appUrlSplit[0] + "//" + appUrlSplit[2] + "/" + appUrlSplit[3] + "/";
@@ -38,46 +62,51 @@ $(document).ready(function() {
                 sessionStorage.setItem("ISCellUrl", Common.cellUrl);
                 var split = Common.target.split("/");
                 lm.boxName = split[split.length - 1];
+                break;
             case "token":
                 Common.token = param[1];
                 sessionStorage.setItem("ISToken", param[1]);
+                break;
             case "ref":
                 Common.refToken = param[1];
                 sessionStorage.setItem("ISRefToken", param[1]);
+                break;
             case "expires":
                 Common.expires = param[1];
                 sessionStorage.setItem("ISExpires", param[1]);
+                break;
             case "refexpires":
                 Common.refExpires = param[1];
                 sessionStorage.setItem("ISRefExpires", param[1]);
+                break;
         }
     }
 
     if (lm.checkParam()) {
         //lm.setHtml();
         //lm.getApprovedList();
-    lm.getReceiveMessage();
+        lm.getReceiveMessage();
     }
 
     Common.setIdleTime();
-});
+}
 
 lm.checkParam = function() {
     var msg = "";
     if (Common.target === null) {
-        msg = '対象セルが設定されていません。';
+        msg = 'msg.error.targetCellNotSelected';
     } else if (Common.token === null) {
-        msg = 'トークンが設定されていません。';
+        msg = 'msg.error.tokenMissing';
     } else if (Common.refToken === null) {
-        msg = 'リフレッシュトークンが設定されていません。';
+        msg = 'msg.error.refreshTokenMissing';
     } else if (Common.expires === null) {
-        msg = 'トークンの有効期限が設定されていません。';
+        msg = 'msg.error.tokenExpiryDateMissing';
     } else if (Common.refExpires === null) {
-        msg = 'リフレッシュトークンの有効期限が設定されていません。';
+        msg = 'msg.error.refreshTokenExpiryDateMissing';
     }
 
     if (msg.length > 0) {
-        $('#errorMsg').html(msg);
+        $('#errorMsg').attr("data-i18n", msg).localize();
         $('#errorMsg').css("display", "block");
         $("#exeSearch").prop('disabled', true);
         return false;
@@ -209,7 +238,7 @@ lm.getReceiveMessage = function() {
         for (var i in results) {
             var title = results[i].Title;
             if (title == null) {
-                title = "件名なし";
+                title = i18next.t("glossary:notSubject");
             }
             var id = results[i].__id;
             var from = results[i].From;
@@ -248,13 +277,17 @@ lm.getReceiveMessage = function() {
                 });
 //        $.when( prof, relationLength, message, replay).done(function ( prof, relationLength, message, replay) {
                 $.when( prof, message, replay).done(function ( prof, message, replay) {
+                    Common.AddResourceProfile("en", "llmessage", "approved" + i, prof[0]);
+                    Common.AddResourceProfile("ja", "llmessage", "approved" + i, prof[0]);
+
                     var tmpBody = message[0].d.results.Body;
                     tmpBody = tmpBody.substr(1);
                     tmpBody = tmpBody.substr(0, tmpBody.length - 1);
                     messageBody = JSON.parse(tmpBody);
                     if (replay[0].d.results.length == 0 ){
                         var targetImage = prof[0].Image;
-                        var targetName = prof[0].DisplayName
+                        //var targetName = prof[0].DisplayName
+                        var targetName = "llmessage:approved" + i;
                         var messageFrom = message[0].d.results.From;
                         var tmpDate = message[0].d.results.__updated;
                         tmpDate = parseInt(tmpDate.replace(/[^0-9^]/g,""));
@@ -293,13 +326,13 @@ lm.getReceiveMessage = function() {
 */
                         if (lm.isExpired(messageBody.TermEnd)){
                             $("#approvedList").append(offerHtml);
-                            $('#targetName').html('<div class="sizeCaption">' + targetName + '</div>');
+                            $('#targetName').attr("data-i18n", targetName);
                             $('#targetName').attr({"id":"targetNameSet"});
                             $('#targetIcon').attr({"src":targetImage});
                             $('#targetIcon').attr({"id":"requestIconSet"});
                         } else {
                             $("#providedList").append(offerHtml);
-                            $('#targetName').html('<div class="sizeCaption">' + targetName + '</div>');
+                            $('#targetName').attr("data-i18n", targetName);
                             $('#targetName').attr({"id":"targetNameSet"});
                             $('#targetIcon').attr({"src":targetImage});
                             $('#targetIcon').attr({"id":"requestIconSet"});
@@ -314,7 +347,9 @@ lm.getReceiveMessage = function() {
                 tmpBody = tmpBody.substr(1);
                 tmpBody = tmpBody.substr(0, tmpBody.length - 1);
                 messageBody = JSON.parse(tmpBody);
-                if (lm.isExpired(messageBody.TermEnd)) {
+
+                // If you want to display the message of the past day, comment out the if statement.
+                //if (lm.isExpired(messageBody.TermEnd)) {
 /*
           if (nowRow%10 == 0) {
             if (nowRow !== 0) {
@@ -353,14 +388,14 @@ lm.getReceiveMessage = function() {
                     html += '</a>';
                     html += '</li>';
                     lm.profileList.push(lm.getProfile(from));
-                }
+                //}
             }
         }
         lm.setProfile();
 //    lm.setTargetProfile();
         if (html.length > 0) {
             html += '</table></div>';
-            $("#messageList").append(html);
+            $("#messageList").append(html).localize();
         }
 //    if (offerHtml.length > 0) {
 //      html += '</table></div>';
@@ -374,12 +409,16 @@ lm.setProfile = function() {
         for (var i = 0; i < arguments.length; i++) {
             var result = arguments[i];
             if (result.length > 0) {
-                $('#requestName').html('<div class="sizeCaption">' + result[0].DisplayName + '</div>');
+                Common.AddResourceProfile("en", "llmessage", "msg" + i, result[0]);
+                Common.AddResourceProfile("ja", "llmessage", "msg" + i, result[0]);
+                $('#requestName').html('<div class="sizeCaption" data-i18n="llmessage:msg' + i + '_DisplayName"></div>').localize();
                 $('#requestName').attr({"id":"requestNameSet"});
                 $('#requestIcon').attr({"src":result[0].Image});
                 $('#requestIcon').attr({"id":"requestIconSet"});
             } else {
-                $('#requestName').html('<div class="sizeCaption">' + result.DisplayName + '</div>');
+                Common.AddResourceProfile("en", "llmessage", "msg" + i, result);
+                Common.AddResourceProfile("ja", "llmessage", "msg" + i, result);
+                $('#requestName').html('<div class="sizeCaption" data-i18n="llmessage:msg' + i + '_DisplayName"></div>').localize();
                 $('#requestName').attr({"id":"requestNameSet"});
                 $('#requestIcon').attr({"src":result.Image});
                 $('#requestIcon').attr({"id":"requestIconSet"});
@@ -413,6 +452,9 @@ lm.moveReplay = function(id, numerator) {
     location.href = "./requestReplay.html";
 };
 
+/*
+ * If the received date is past in the past, we will return false.
+ */
 lm.isExpired = function(TermEnd) {
     var tmpDay = new Date();
     today = tmpDay.getFullYear() + "/" + ( tmpDay.getMonth() + 1 ) + "/" + tmpDay.getDate();
