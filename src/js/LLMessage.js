@@ -1,5 +1,8 @@
 var lm = {};
 
+// Whether all messages are displayed
+lm.showExpiredMessage = true;
+
 lm.getName = function(path) {
     var collectionName = path;
     var recordsCount = 0;
@@ -82,38 +85,12 @@ lm.additionalCallback = function() {
         }
     }
 
-    if (lm.checkParam()) {
-        //lm.setHtml();
-        //lm.getApprovedList();
+    if (Common.checkParam()) {
         lm.getReceiveMessage();
     }
 
     Common.setIdleTime();
 }
-
-lm.checkParam = function() {
-    var msg = "";
-    if (Common.target === null) {
-        msg = 'msg.error.targetCellNotSelected';
-    } else if (Common.token === null) {
-        msg = 'msg.error.tokenMissing';
-    } else if (Common.refToken === null) {
-        msg = 'msg.error.refreshTokenMissing';
-    } else if (Common.expires === null) {
-        msg = 'msg.error.tokenExpiryDateMissing';
-    } else if (Common.refExpires === null) {
-        msg = 'msg.error.refreshTokenExpiryDateMissing';
-    }
-
-    if (msg.length > 0) {
-        $('#errorMsg').attr("data-i18n", msg).localize();
-        $('#errorMsg').css("display", "block");
-        $("#exeSearch").prop('disabled', true);
-        return false;
-    }
-
-    return true;
-};
 
 lm.IsArrayExists = function(array, value) {
     for (var i =0, len = array.length; i < len; i++) {
@@ -123,88 +100,6 @@ lm.IsArrayExists = function(array, value) {
     }
     return false;
 };
-
-/*
-lm.getApprovedList = function() {
-  return $("#approvedList").empty();
-  var approvedList = [];
-  var array = [];
-  lm.getRelationListAPI().done(function(data) {
-    if (data.d.results.length > 0) {
-      relationResults = data.d.results;
-      for (i=0; i < relationResults.length; i++){
-         var relationName = relationResults[i].Name;
-         lm.getRelation$LinksListAPI(relationName).done(function(data) {
-           extCellResults = data.d.results;
-           for (j=0; j < extCellResults.length; j++) {
-             value = extCellResults[j].uri
-             if(! lm.IsArrayExists(array, value)) {
-               array.push(extCellResults[j].uri);
-               console.log(array.length);
-             }
-           }
-         });
-      }
-    }
-  });
- };
-
- lm.setHtml = function() {
-   $.when.apply($, lm.getApprovedList).done(function(array) {
-     console.log(array);
-     var results = array;
-     var nowRow = 0;
-     var html = '';
-     lm.targetProfileList = new Array();
-     console.log(array);
-     for (var i in array) {
-       console.log("for文開始")
-       if (nowRow%10 == 0) {
-         if (nowRow !== 0) {
-           html += '</table></div>';
-           $("#approvedList").append(html);
-           html = "";
-         }
-         html += '<div class="content"><table width="100%" class="notMargin">';
-       }
-       var targetCell =  array[i].match(/\((.+)\)/)[1].replace(/'/g,"");
-       html += '<tr class="request"><td width="5%"><div class="requestIcon"><img id="targetIcon"/></div></td><td width="95%"><div class="panel-heading requestList"><h4 class="panel-title accordion-togle"><a id="targetName" onClick="lm.moveApprovalDetails(\'' + targetCell + '\');return false;" href="javascript:void(0)" class="allToggle collapsed"></a></h4></div></td></tr>';
-       lm.targetProfileList.push(lm.getProfile(targetCell));
-     }
-     lm.setTargetProfile();
-     if (html.length > 0) {
-       html += '</table></div>';
-       $("#approvedList").append(html);
-     }
-   });
- }
-*/
-
-/*
-           var results = data.d.results;
-           var nowRow = 0;
-           var html = '';
-           lm.targetProfileList = new Array();
-           for (var i in results) {
-             if (nowRow%10 == 0) {
-               if (nowRow !== 0) {
-                 html += '</table></div>';
-                 $("#approvedList").append(html);
-                 html = "";
-               }
-               html += '<div class="content"><table width="100%" class="notMargin">';
-             }
-             var targetCell =  results[i].uri.match(/\((.+)\)/)[1].replace(/'/g,"");
-             html += '<tr class="request"><td width="5%"><div class="requestIcon"><img id="targetIcon"/></div></td><td width="95%"><div class="panel-heading requestList"><h4 class="panel-title accordion-togle"><a id="targetName" onClick="lm.moveApprovalDetails(\'' + targetCell + '\');return false;" href="javascript:void(0)" class="allToggle collapsed"></a></h4></div></td></tr>';
-             lm.targetProfileList.push(lm.getProfile(targetCell));
-           }
-           lm.setTargetProfile();
-           if (html.length > 0) {
-             html += '</table></div>';
-             $("#approvedList").append(html);
-           }
-           */
-
 
 lm.setTargetProfile = function() {
     $.when.apply($, lm.targetProfileList).done(function () {
@@ -247,47 +142,22 @@ lm.getReceiveMessage = function() {
             var tmpRelationName = results[i].RequestRelation.split("/")
             var relationName = tmpRelationName[tmpRelationName.length - 1];
             var changedDate = lm.changeUnixTime(unixTime);
-            //if (results[i].Type !== "message" && results[i].Status !== "approved" && results[i].Status !== "rejected") {
             if (results[i].Status == "approved") {
                 var targetCell = results[i].From;
-/*
-　      offerHtml += '<tr class="request"><td width="5%"><div class="requestIcon"><img id="targetIcon"/></div></td><td width="60%"><div class="panel-heading requestList"><h4 class="panel-title accordion-togle"><a class="allToggle" onClick="lm.moveApprovalDetails(\'' + targetCell + '\', \'' + id + '\');return false;" href="javascript:void(0)" class="allToggle collapsed">' + title + '<h6 class="notMargin" id="targetName"></h6><h6 class="notMargin">' + changedDate + '</h6></a></h4></div></td><td width="35%"></td></tr>';
-        offerHtml += '<li>';
-        offerHtml += '<a href="#">';
-        offerHtml += '<div class="list-icon">';
-        offerHtml += '<img id="targetIcon"/>';
-        offerHtml += '</div>';
-        offerHtml += '<div class="list-body">';
-        offerHtml += '<div class="sizeBody">' + title + '</div>';
-        offerHtml += '<id="targetName">';
-        offerHtml += '<div class="sizeCaption">' + changedDate + '</div>';
-        offerHtml += '</div>';
-        offerHtml += '<div class="sizeCaption">28/50</div>';
-        offerHtml += '</a>';
-        offerHtml += '</li>';
-*/
-
-//        var relationLength = lm.getRelation$LinksListAPI(relationName).done(function(linksResponse){
-//        });
                 var prof = lm.getProfile(targetCell).done(function(prof) {
                 });
                 var message = lm.getSingleReceivedMessageAPI(id).done(function(message){
                 });
                 var replay = lm.getSentMessageAPI(id).done(function(message){
                 });
-//        $.when( prof, relationLength, message, replay).done(function ( prof, relationLength, message, replay) {
                 $.when( prof, message, replay).done(function ( prof, message, replay) {
-                    Common.AddResourceProfile("en", "llmessage", "approved" + i, prof[0]);
-                    Common.AddResourceProfile("ja", "llmessage", "approved" + i, prof[0]);
-
                     var tmpBody = message[0].d.results.Body;
                     tmpBody = tmpBody.substr(1);
                     tmpBody = tmpBody.substr(0, tmpBody.length - 1);
                     messageBody = JSON.parse(tmpBody);
                     if (replay[0].d.results.length == 0 ){
                         var targetImage = prof[0].Image;
-                        //var targetName = prof[0].DisplayName
-                        var targetName = "llmessage:approved" + i;
+                        var targetName = prof[0].DisplayName
                         var messageFrom = message[0].d.results.From;
                         var tmpDate = message[0].d.results.__updated;
                         tmpDate = parseInt(tmpDate.replace(/[^0-9^]/g,""));
@@ -299,7 +169,6 @@ lm.getReceiveMessage = function() {
                         } else {
                             var denominator = messageBody.sendCount;
                         }
-//            var denominator = Math.floor(Math.random() * 50) + 51;
                         var numerator = Math.floor(Math.random() * denominator);
                         offerHtml = ""
                         offerHtml += '<li>';
@@ -315,31 +184,20 @@ lm.getReceiveMessage = function() {
                         offerHtml += '<div class="sizeCaption">' + numerator + '/' + denominator +  '</div>';
                         offerHtml += '</a>';
                         offerHtml += '</li>';
-/*
-            offerHtml += '</table></div>'
-            offerHtml += '<div class="content"><table width="100%" class="notMargin">';
-            offerHtml += '<tr class="request"><td width="5%"><div class="requestIcon"><img id="targetIcon"/>';
-            offerHtml += '</div></td><td width="60%"><div class="panel-heading requestList"><h4 class="panel-title accordion-togle">';
-            offerHtml += '<a class="allToggle" onClick="lm.moveApprovalDetails(\'' + messageFrom + '\', \'' + messageId + '\', \'' + numerator + '\');return false;" href="javascript:void(0)" class="allToggle collapsed">' + messageTitle;
-            offerHtml += '<h6 class="notMargin" id="targetName"></h6><h6 class="notMargin">' + messageDate + '</h6></a></h4></div></td>';
-            offerHtml += '<td width="35%"><div>' + numerator + '／' + denominator + 'が同意済</div></td></tr>';
-*/
                         if (lm.isExpired(messageBody.TermEnd)){
                             $("#approvedList").append(offerHtml);
-                            $('#targetName').attr("data-i18n", targetName);
+                            $('#targetName').html(targetName);
                             $('#targetName').attr({"id":"targetNameSet"});
                             $('#targetIcon').attr({"src":targetImage});
                             $('#targetIcon').attr({"id":"requestIconSet"});
                         } else {
                             $("#providedList").append(offerHtml);
-                            $('#targetName').attr("data-i18n", targetName);
+                            $('#targetName').html(targetName);
                             $('#targetName').attr({"id":"targetNameSet"});
                             $('#targetIcon').attr({"src":targetImage});
                             $('#targetIcon').attr({"id":"requestIconSet"});
                         }
                     }
-          //offerHtml += '<tr class="request"><td width="5%"><div class="requestIcon"><img id="targetIcon"/></div></td><td width="95%"><div class="panel-heading requestList"><h4 class="panel-title accordion-togle"><a id="targetName" onClick="lm.moveApprovalDetails(\'' + targetCell + '\', \'' + numerator + '\');return false;" href="javascript:void(0)" class="allToggle collapsed"></a></h4></div></td></tr>';
-        //        lm.targetProfileList.push(lm.getProfile(targetCell));
                 });
             }
             if (results[i].Status !== "approved" && results[i].Status !== "rejected") {
@@ -348,18 +206,7 @@ lm.getReceiveMessage = function() {
                 tmpBody = tmpBody.substr(0, tmpBody.length - 1);
                 messageBody = JSON.parse(tmpBody);
 
-                // If you want to display the message of the past day, comment out the if statement.
-                //if (lm.isExpired(messageBody.TermEnd)) {
-/*
-          if (nowRow%10 == 0) {
-            if (nowRow !== 0) {
-              html += '</table></div>';
-              $("#messageList").append(html);
-              html = "";
-            }
-            html += '<div class="content"><table width="100%" class="notMargin">';
-          }
-*/
+                if (lm.showExpiredMessage || lm.isExpired(messageBody.TermEnd)) {
                     var tmpBody = results[i].Body;
                     tmpBody = tmpBody.substr(1);
                     tmpBody = tmpBody.substr(0, tmpBody.length - 1);
@@ -369,11 +216,7 @@ lm.getReceiveMessage = function() {
                     } else {
                         var denominator = messageBody.sendCount;
                     }
-          //            var denominator = Math.floor(Math.random() * 50) + 51;
                     var numerator = Math.floor(Math.random() * denominator);
-          //        var denominator = Math.floor(Math.random() * 50) + 51;
-          //        var numerator = Math.floor(Math.random() * 50) + 1;
-          //html += '<tr class="request"><td width="5%"><div class="requestIcon"><img id="requestIcon"/></div></td><td width="60%"><div class="panel-heading requestList"><h4 class="panel-title accordion-togle"><a class="allToggle" onClick="lm.moveReplay(\'' + id + '\', \'' + numerator + '\');return false;" href="javascript:void(0)" class="allToggle collapsed">' + title + '<h6 class="notMargin" id="requestName"></h6><h6 class="notMargin">' + changedDate + '</h6></a></h4></div></td><td width="35%"><div>' + numerator + '／' + denominator + 'が同意済</div></td></tr>';
                     html += '<li>';
                     html += '<a onClick="lm.moveReplay(\'' + id + '\', \'' + numerator + '\');return false;" href="javascript:void(0)">';
                     html += '<div class="list-icon">';
@@ -388,19 +231,14 @@ lm.getReceiveMessage = function() {
                     html += '</a>';
                     html += '</li>';
                     lm.profileList.push(lm.getProfile(from));
-                //}
+                }
             }
         }
         lm.setProfile();
-//    lm.setTargetProfile();
         if (html.length > 0) {
             html += '</table></div>';
-            $("#messageList").append(html).localize();
+            $("#messageList").append(html);
         }
-//    if (offerHtml.length > 0) {
-//      html += '</table></div>';
-//      $("#approvedList").append(offerHtml);
-//    }
     });
 };
 
@@ -409,16 +247,12 @@ lm.setProfile = function() {
         for (var i = 0; i < arguments.length; i++) {
             var result = arguments[i];
             if (result.length > 0) {
-                Common.AddResourceProfile("en", "llmessage", "msg" + i, result[0]);
-                Common.AddResourceProfile("ja", "llmessage", "msg" + i, result[0]);
-                $('#requestName').html('<div class="sizeCaption" data-i18n="llmessage:msg' + i + '_DisplayName"></div>').localize();
+                $('#requestName').html('<div class="sizeCaption">' + result[0].DisplayName + '</div>');
                 $('#requestName').attr({"id":"requestNameSet"});
                 $('#requestIcon').attr({"src":result[0].Image});
                 $('#requestIcon').attr({"id":"requestIconSet"});
             } else {
-                Common.AddResourceProfile("en", "llmessage", "msg" + i, result);
-                Common.AddResourceProfile("ja", "llmessage", "msg" + i, result);
-                $('#requestName').html('<div class="sizeCaption" data-i18n="llmessage:msg' + i + '_DisplayName"></div>').localize();
+                $('#requestName').html('<div class="sizeCaption">' + result.DisplayName + '</div>');
                 $('#requestName').attr({"id":"requestNameSet"});
                 $('#requestIcon').attr({"src":result.Image});
                 $('#requestIcon').attr({"id":"requestIconSet"});
@@ -453,7 +287,7 @@ lm.moveReplay = function(id, numerator) {
 };
 
 /*
- * If the received date is past in the past, we will return false.
+ * If the retrieved message's timestamp is not today, it is considered expired.
  */
 lm.isExpired = function(TermEnd) {
     var tmpDay = new Date();

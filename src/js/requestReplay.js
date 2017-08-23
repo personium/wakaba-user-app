@@ -61,7 +61,7 @@ rr.additionalCallback = function() {
         }
     }
 
-    if (rr.checkParam()) {
+    if (Common.checkParam()) {
        rr.getReceiveMessage();
     }
 
@@ -101,26 +101,18 @@ rr.getReceiveMessage = function() {
             listHtml += '<label for="data01" id ="data01Label"></label>';
             listHtml += '</div>';
             listHtml += '<ul class="itemization">';
-            listHtml += '<li data-i18n="requestReplay:provideData.sex"></li>';
-            listHtml += '<li data-i18n="requestReplay:provideData.age"></li>';
-            listHtml += '<li data-i18n="requestReplay:provideData.area"></li>';
+            listHtml += '<li data-i18n="glossary:provideData.sex"></li>';
+            listHtml += '<li data-i18n="glossary:provideData.age"></li>';
+            listHtml += '<li data-i18n="glossary:provideData.area"></li>';
             if (messageBodyType == "2") {
-              listHtml += '<li data-i18n="requestReplay:provideData.stress.stressData"></li>';
-              listHtml += '<li data-i18n="requestReplay:provideData.stress.comment"></li>';
+              listHtml += '<li data-i18n="glossary:provideData.stress.stressData"></li>';
+              listHtml += '<li data-i18n="glossary:provideData.stress.comment"></li>';
             } else {
-              listHtml += '<li data-i18n="requestReplay:provideData.calsml.mealRecord"></li>';
-              listHtml += '<li data-i18n="requestReplay:provideData.calsml.shootingDate"></li>';
-              listHtml += '<li data-i18n="requestReplay:provideData.calsml.comment"></li>';
+              listHtml += '<li data-i18n="glossary:provideData.calsml.mealRecord"></li>';
+              listHtml += '<li data-i18n="glossary:provideData.calsml.shootingDate"></li>';
+              listHtml += '<li data-i18n="glossary:provideData.calsml.comment"></li>';
             }
             listHtml += '</ul>';
-            /*
-            listHtml += '<div class="request-btn-area">';
-            listHtml += '<button class="round-btn" id="acceptRequest">提供する</button>';
-            listHtml += '</div>';
-            listHtml += '<div class="request-btn-area">';
-            listHtml += '<button class="round-btn negative" id="rejectRequest">リクエストを拒否</button>';
-            listHtml += '</div>';
-            */
             $('#providedInfo').prepend(listHtml).localize();
 
             if ( messageBodyParse.sendCount == null ) {
@@ -138,15 +130,11 @@ rr.getReceiveMessage = function() {
             var getProfileUrl = response.d.results.From + "__/profile.json";
             sessionStorage.setItem("RRgetProfileUrl", getProfileUrl);
             rr.getProfile().done(function(response){
-                Common.AddResourceProfile("en", "requestReplay", "requestProfile", response);
-                Common.AddResourceProfile("ja", "requestReplay", "requestProfile", response);
-                i18next.addResource("en", "requestReplay", "data01Label", '$t(requestReplay:requestProfile_DisplayName) data set');
-                i18next.addResource("ja", "requestReplay", "data01Label", '$t(requestReplay:requestProfile_DisplayName)のデータ一式');
-
+                var displayName = response.DisplayName;
                 var displayImage = response.Image
                 $('img#requestIcon').attr({"src":displayImage});
-                $('#requestName').attr("data-i18n", "requestReplay:requestProfile_DisplayName").localize();
-                $('#data01Label').attr("data-i18n", "requestReplay:data01Label").localize();
+                $('#requestName').html(displayName);
+                $('#data01Label').attr("data-i18n", "glossary:dataSetLabel").localize({name: displayName});
             }).fail(function(response){
                 console.log(JSON.stringify(response));
             });
@@ -193,7 +181,7 @@ rr.getReceiveMessage = function() {
             ackBody.Command = "rejected";
             rr.requestReplay(ackBody).done(function(){
                 var replayMessage = JSON.parse(sessionStorage.getItem("RRreplayMassage"));
-                replayMessage.Body = i18next.t("requestReplay:cancelDataProvision");
+                replayMessage.Body = i18next.t("glossary:cancelDataProvision");
                 rr.sendReplay(replayMessage).done(function(){
                     alert(i18next.t("requestReplay:refusedDataProvision"));
                     location.href = "./LLMessage.html";
@@ -247,27 +235,4 @@ rr.getProfile = function(){
         url: sessionStorage.getItem("RRgetProfileUrl"),
         dataType: 'json',
     });
-};
-
-rr.checkParam = function() {
-    var msg = "";
-    if (Common.target === null) {
-        msg = 'targetCellNotSelected';
-    } else if (Common.token === null) {
-        msg = 'tokenMissing';
-    } else if (Common.refToken === null) {
-        msg = 'refreshTokenMissing';
-    } else if (Common.expires === null) {
-        msg = 'tokenExpiryDateMissing';
-    } else if (Common.refExpires === null) {
-        msg = 'refreshTokenExpiryDateMissing';
-    }
-
-    if (msg.length > 0) {
-        $('#errorMsg').attr("data-i18n", msg).localize();
-        $('#errorMsg').css("display", "block");
-        $("#exeSearch").prop('disabled', true);
-        return false;
-    }
-    return true;
 };

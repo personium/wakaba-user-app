@@ -1,8 +1,8 @@
 {
     "title": "メッセージ一覧"
-   ,"header": "わかば市"
-   ,"sectionHeader1": "データ提供中"
-   ,"sectionHeader2": "データ提供リクエスト"
-   ,"sectionHeader3": "過去に提供したデータ"
+   ,"wakabaCity": "わかば市"
+   ,"dataProvidingNow": "データ提供中"
+   ,"dataProvisionRequest": "データ提供リクエスト"
+   ,"dataProvided": "過去に提供したデータ"
    ,"more": "もっとみる"
 }

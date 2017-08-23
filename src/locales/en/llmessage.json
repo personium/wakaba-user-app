@@ -1,8 +1,8 @@
 {
     "title": "Message List"
-   ,"header": "Wakaba Municipality"
-   ,"sectionHeader1": "Data providing"
-   ,"sectionHeader2": "Data provision request"
-   ,"sectionHeader3": "Data provided in the past"
+   ,"wakabaCity": "Wakaba Municipality"
+   ,"dataProvidingNow": "Data providing now"
+   ,"dataProvisionRequest": "Data provision request"
+   ,"dataProvided": "Data provided in the past"
    ,"more": "more"
 }

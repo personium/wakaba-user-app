@@ -1,4 +1,4 @@
-<html lang="ja">
+<html>
 <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -43,15 +43,19 @@
 
     <img style="max-width: 100%;" id="randomImage"/>
 
-    <section class="border-seperator" id="requestText">
+    <section class="border-seperator">
+        <h3 data-i18n="glossary:description"></h3>
+        <div class="sizeCaption" id="requestText"></div>
     </section>
 
-    <section class="border-seperator" id="requestUse">
+    <section class="border-seperator">
+        <h3 data-i18n="glossary:purposeOfUse"></h3>
+        <div class="sizeCaption" id="requestUse"></div>
     </section>
 
     <section id="providedInfo">
         <div class="request-btn-area">
-        <button class="round-btn negative" id="rejectRequest">提供をやめる</button>
+        <button class="round-btn negative" id="rejectRequest" data-i18n="approvalDataDetails:stopOffering"></button>
         </div>
     </section>
 

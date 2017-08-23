@@ -3,28 +3,11 @@
    ,"rejectRequest": "Reject request"
    ,"dataRequest": "Data Request"
    ,"selectProvideDataMessage": "Please select the data to provide."
-   ,"description": "Description"
-   ,"purposeOfUse": "purpose of use"
    ,"consenteesNumber": "{{num}} / {{den}} people"
    ,"approvedRequest": "The data provision request was approved."
    ,"requestApproved": "approved the data provision request."
    ,"alreadyRequestApproved": "The data provision request has already been approved."
    ,"failedRequestApproved": "Failed to answer data provision request.<br>{{msg}}"
-   ,"cancelDataProvision": "Data provision has been canceled."
    ,"refusedDataProvision": "We refused the request for data provision."
    ,"failedRefusedDataProvision": "We failed to refuse data provision request.<br>{{msg}}"
-   ,"provideData": {
-       "sex": "Sex"
-      ,"age": "Age"
-      ,"area": "Area"
-      ,"stress": {
-           "stressData": "Stress Data"
-          ,"comment": "Comment"
-      }
-      ,"calsml": {
-           "mealRecord": "Meal record (picture)"
-          ,"shootingDate": "Date and time of shooting"
-          ,"comment": "Comment"
-      }
-   }
 }

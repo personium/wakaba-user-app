@@ -1,0 +1,6 @@
+{
+    "stopOffering": "提供をやめる"
+   ,"dataBeingProvided": "提供中のデータ"
+   ,"dataProvisionEnded": "データ提供を終了しました。"
+   ,"failedDataProvisionEnded": "データ提供の終了に失敗しました。\n{{msg}}"
+}

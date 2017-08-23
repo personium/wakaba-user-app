@@ -3,28 +3,11 @@
    ,"rejectRequest": "リクエストを拒否"
    ,"dataRequest": "データリクエスト"
    ,"selectProvideDataMessage": "提供するデータを選んでください。"
-   ,"description": "説明"
-   ,"purposeOfUse": "利用目的"
    ,"consenteesNumber": "{{num}} / {{den}}人"
    ,"approvedRequest": "データ提供依頼が承認されました。"
    ,"requestApproved": "データ提供依頼を承認しました。"
    ,"alreadyRequestApproved": "データ提供要求は既に承認されています。"
    ,"failedRequestApproved": "データ提供依頼の回答に失敗しました。<br>{{msg}}"
-   ,"cancelDataProvision": "データ提供がキャンセルされました。"
    ,"refusedDataProvision": "データ提供依頼を拒否しました。"
    ,"failedRefusedDataProvision": "データ提供依頼の拒否に失敗しました。<br>{{msg}}"
-   ,"provideData": {
-       "sex": "性別"
-      ,"age": "年齢"
-      ,"area": "地域"
-      ,"stress": {
-           "stressData": "ストレスデータ"
-          ,"comment": "コメント"
-      }
-      ,"calsml": {
-           "mealRecord": "食事記録（写真）"
-          ,"shootingDate": "撮影日時"
-          ,"comment": "コメント"
-      }
-   }
 }

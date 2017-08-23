@@ -28,20 +28,6 @@ Common.updateContent = function() {
     $('[data-i18n]').localize();
 }
 
-Common.AddResourceProfile = function(lng , ns, id, json) {
-    if (json.DisplayName[lng]) {
-        i18next.addResource(lng, ns, id + "_DisplayName", json.DisplayName[lng]);
-    } else {
-        i18next.addResource(lng, ns, id + "_DisplayName", json.DisplayName);
-    }
-
-    if (json.Description[lng]) {
-        i18next.addResource(lng, ns, id + "_Description", json.Description[lng]);
-    } else {
-        i18next.addResource(lng, ns, id + "_Description", json.Description);
-    }
-};
-
 // This method checks idle time
 Common.setIdleTime = function() {
     // Create Session Expired Modal
@@ -120,6 +106,30 @@ Common.refreshToken = function() {
             sessionStorage.setItem("ISRefExpires", data.refresh_token_expires_in);
         });
     });
+};
+
+Common.checkParam = function() {
+    var msg = "";
+    if (Common.target === null) {
+        msg = 'msg.error.targetCellNotSelected';
+    } else if (Common.token === null) {
+        msg = 'msg.error.tokenMissing';
+    } else if (Common.refToken === null) {
+        msg = 'msg.error.refreshTokenMissing';
+    } else if (Common.expires === null) {
+        msg = 'msg.error.tokenExpiryDateMissing';
+    } else if (Common.refExpires === null) {
+        msg = 'msg.error.refreshTokenExpiryDateMissing';
+    }
+
+    if (msg.length > 0) {
+        $('#errorMsg').attr("data-i18n", msg).localize();
+        $('#errorMsg').css("display", "block");
+        $("#exeSearch").prop('disabled', true);
+        return false;
+    }
+
+    return true;
 };
 
 Common.refreshTokenAPI = function(appCellToken) {
