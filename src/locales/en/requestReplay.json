@@ -1,0 +1,13 @@
+{
+    "provide": "provide"
+   ,"rejectRequest": "Reject request"
+   ,"dataRequest": "Data Request"
+   ,"selectProvideDataMessage": "Please select the data to provide."
+   ,"consenteesNumber": "{{num}} / {{den}} people"
+   ,"approvedRequest": "The data provision request was approved."
+   ,"requestApproved": "approved the data provision request."
+   ,"alreadyRequestApproved": "The data provision request has already been approved."
+   ,"failedRequestApproved": "Failed to answer data provision request.<br>{{msg}}"
+   ,"refusedDataProvision": "We refused the request for data provision."
+   ,"failedRefusedDataProvision": "We failed to refuse data provision request.<br>{{msg}}"
+}

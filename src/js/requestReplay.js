@@ -1,6 +1,30 @@
 var rr = {};
 
 $(document).ready(function() {
+    i18next
+    .use(i18nextXHRBackend)
+    .use(i18nextBrowserLanguageDetector)
+    .init({
+        fallbackLng: 'en',
+        ns: ['common', 'glossary', 'requestReplay'],
+        defaultNS: 'common',
+        debug: true,
+        backend: {
+            // load from i18next-gitbook repo
+            loadPath: './locales/{{lng}}/{{ns}}.json',
+            crossDomain: true
+        }
+    }, function(err, t) {
+        Common.initJqueryI18next();
+        
+        Common.createSessionExpired();
+        rr.additionalCallback();
+        
+        Common.updateContent();
+    });
+});
+
+rr.additionalCallback = function() {
     var appUrlMatch = location.href.split("#");
     var appUrlSplit = appUrlMatch[0].split("/");
     rr.appUrl = appUrlSplit[0] + "//" + appUrlSplit[2] + "/" + appUrlSplit[3] + "/";
@@ -37,19 +61,19 @@ $(document).ready(function() {
         }
     }
 
-    if (rr.checkParam()) {
+    if (Common.checkParam()) {
        rr.getReceiveMessage();
     }
 
-    //Common.setIdleTime();
-});
+    Common.setIdleTime();
+}
 
 rr.getReceiveMessage = function() {
 //検索結果を表示し、メール送信先を作成する
     $(function() {
 
   //初期値
-        var token = "Bearer " + Common.token
+        var token = "Bearer " + Common.token;
         var messageId = sessionStorage.getItem("LMMessageID");
         var getMessageUrl = Common.cellUrl + "__ctl/ReceivedMessage('" + messageId + "')";
         var ackMessageUrl = Common.cellUrl + "__message/received/" + messageId ;
@@ -63,41 +87,33 @@ rr.getReceiveMessage = function() {
         rr.getMessage().done(function(response){
             var messageTitle = response.d.results.Title;
             if (messageTitle == null) {
-                messageTitle = "件名なし";
+                messageTitle = i18next.t("glossary:notSubject");
             }
             var messageBodyParse = JSON.parse(response.d.results.Body.replace( /'/g , "" ));
             var messageBodyText = messageBodyParse.Body;
             var messageBodyUse = messageBodyParse.Text;
             var messageBodyType = messageBodyParse.Type;
             var listHtml = "";
-            listHtml += '<h3>データリクエスト</h3>';
-            listHtml += '<div class="sizeCaption">提供するデータを選んでください。</div>';
+            listHtml += '<h3 data-i18n="requestReplay:dataRequest"></h3>';
+            listHtml += '<div class="sizeCaption" data-i18n="requestReplay:selectProvideDataMessage"></div>';
             listHtml += '<div>';
             listHtml += '<input type="checkbox" id="data01" checked="checked" disabled="disabled">';
             listHtml += '<label for="data01" id ="data01Label"></label>';
             listHtml += '</div>';
             listHtml += '<ul class="itemization">';
-            listHtml += '<li>性別</li>';
-            listHtml += '<li>年齢</li>';
-            listHtml += '<li>地域</li>';
+            listHtml += '<li data-i18n="glossary:provideData.sex"></li>';
+            listHtml += '<li data-i18n="glossary:provideData.age"></li>';
+            listHtml += '<li data-i18n="glossary:provideData.area"></li>';
             if (messageBodyType == "2") {
-              listHtml += '<li>ストレスデータ</li>';
-              listHtml += '<li>コメント</li>';
+              listHtml += '<li data-i18n="glossary:provideData.stress.stressData"></li>';
+              listHtml += '<li data-i18n="glossary:provideData.stress.comment"></li>';
             } else {
-              listHtml += '<li>食事記録（写真）</li>';
-              listHtml += '<li>撮影日時</li>';
-              listHtml += '<li>コメント</li>';
+              listHtml += '<li data-i18n="glossary:provideData.calsml.mealRecord"></li>';
+              listHtml += '<li data-i18n="glossary:provideData.calsml.shootingDate"></li>';
+              listHtml += '<li data-i18n="glossary:provideData.calsml.comment"></li>';
             }
             listHtml += '</ul>';
-            /*
-            listHtml += '<div class="request-btn-area">';
-            listHtml += '<button class="round-btn" id="acceptRequest">提供する</button>';
-            listHtml += '</div>';
-            listHtml += '<div class="request-btn-area">';
-            listHtml += '<button class="round-btn negative" id="rejectRequest">リクエストを拒否</button>';
-            listHtml += '</div>';
-            */
-            $('#providedInfo').prepend(listHtml);
+            $('#providedInfo').prepend(listHtml).localize();
 
             if ( messageBodyParse.sendCount == null ) {
                 var denominator = Math.floor(Math.random() * 50) + 51
@@ -105,7 +121,7 @@ rr.getReceiveMessage = function() {
                 var denominator = messageBodyParse.sendCount;
             }
             var numerator = sessionStorage.getItem("ApprovalNum");
-            $('#consenteesNumber').html(numerator + '/' + denominator + '人');
+            $('#consenteesNumber').attr("data-i18n", "requestReplay:consenteesNumber").localize({num: numerator, den:denominator});
 
             var messageBodyImgUrl = messageBodyParse.ImgUrl;
             if (messageBodyImgUrl != null) {
@@ -118,15 +134,15 @@ rr.getReceiveMessage = function() {
                 var displayImage = response.Image
                 $('img#requestIcon').attr({"src":displayImage});
                 $('#requestName').html(displayName);
-                $('#data01Label').html(displayName + 'のデータ一式');
+                $('#data01Label').attr("data-i18n", "glossary:dataSetLabel").localize({name: displayName});
             }).fail(function(response){
                 console.log(JSON.stringify(response));
             });
             $('#requestTitle').html(messageTitle);
             messageBodyText = messageBodyText.replace(/\r?\n/g, '<br>');
-            $('#requestText').html('<h3>説明</h3><div class="sizeCaption">' + messageBodyText + '</div>');
+            $('#requestText').html(messageBodyText);
             messageBodyUse = messageBodyUse.replace(/\r?\n/g, '<br>');
-            $('#requestUse').html('<h3>利用目的</h3><div class="sizeCaption">' + messageBodyUse + '</div>');
+            $('#requestUse').html(messageBodyUse);
             var replayMessage = {};
             replayMessage.To = response.d.results.From;
             replayMessage.Type = response.d.results.message;
@@ -141,19 +157,19 @@ rr.getReceiveMessage = function() {
             ackBody.Command = "approved";
             rr.requestReplay(ackBody).done(function(){
                 var replayMessage = JSON.parse(sessionStorage.getItem("RRreplayMassage"));
-                replayMessage.Body = "データ提供依頼が承認されました";
+                replayMessage.Body = i18next.t("requestReplay:approvedRequest");
                 rr.sendReplay(replayMessage).done(function(){
-                    alert("データ提供依頼を承認しました");
+                    alert(i18next.t("requestReplay:requestApproved"));
                 location.href = "./LLMessage.html";
                 });
             }).fail(function(response){
                 console.log(response.responseJSON.code);
                 console.log(JSON.stringify(response));
                 if ( response.responseJSON.code == "PR400-RM-0001" ) {
-                    alert("データ提供依頼承認済みです");
+                    alert(i18next.t("requestReplay:alreadyRequestApproved"));
                     location.href = "./LLMessage.html";
                 } else {
-                    alert("データ提供依頼の回答に失敗しました\n" + JSON.stringify(response));
+                    alert(i18next.t("requestReplay:failedRequestApproved", {msg: JSON.stringify(response)}));
                     location.href = "./LLMessage.html";
                 }
             });
@@ -165,13 +181,13 @@ rr.getReceiveMessage = function() {
             ackBody.Command = "rejected";
             rr.requestReplay(ackBody).done(function(){
                 var replayMessage = JSON.parse(sessionStorage.getItem("RRreplayMassage"));
-                replayMessage.Body = "データ提供がキャンセルされました";
+                replayMessage.Body = i18next.t("glossary:cancelDataProvision");
                 rr.sendReplay(replayMessage).done(function(){
-                    alert("データ提供依頼を拒否しました");
+                    alert(i18next.t("requestReplay:refusedDataProvision"));
                     location.href = "./LLMessage.html";
                 });
             }).fail(function(response){
-                alert("データ提供依頼の拒否に失敗しました\n" + JSON.stringify(response));
+                alert(i18next.t("requestReplay:failedRefusedDataProvision", {msg: JSON.stringify(response)}));
                 location.href = "./LLMessage.html";
             });
         });
@@ -219,27 +235,4 @@ rr.getProfile = function(){
         url: sessionStorage.getItem("RRgetProfileUrl"),
         dataType: 'json',
     });
-};
-
-rr.checkParam = function() {
-    var msg = "";
-    if (Common.target === null) {
-        msg = '対象セルが設定されていません。';
-    } else if (Common.token === null) {
-        msg = 'トークンが設定されていません。';
-    } else if (Common.refToken === null) {
-        msg = 'リフレッシュトークンが設定されていません。';
-    } else if (Common.expires === null) {
-        msg = 'トークンの有効期限が設定されていません。';
-    } else if (Common.refExpires === null) {
-        msg = 'リフレッシュトークンの有効期限が設定されていません。';
-    }
-
-    if (msg.length > 0) {
-        $('#errorMsg').html(msg);
-        $('#errorMsg').css("display", "block");
-        $("#exeSearch").prop('disabled', true);
-        return false;
-    }
-    return true;
 };

@@ -10,6 +10,24 @@ Common.refExpires = sessionStorage.getItem("ISRefExpires");
 Common.IDLE_TIMEOUT =  3600000;
 Common.LASTACTIVITY = new Date().getTime();
 
+/*
+ * Need to move to a function to avoid conflicting with the i18nextBrowserLanguageDetector initialization.
+ */
+Common.initJqueryI18next = function() {
+    // for options see
+    // https://github.com/i18next/jquery-i18next#initialize-the-plugin
+    jqueryI18next.init(i18next, $, {
+        useOptionsAttr: true
+    });
+}
+
+Common.updateContent = function() {
+    // start localizing, details:
+    // https://github.com/i18next/jquery-i18next#usage-of-selector-function
+    $('title').localize();
+    $('[data-i18n]').localize();
+}
+
 // This method checks idle time
 Common.setIdleTime = function() {
     // Create Session Expired Modal
@@ -42,21 +60,22 @@ Common.setIdleTime = function() {
     };
 }
 Common.createSessionExpired = function() {
-    html = '<div id="modal-session-expired" class="modal fade" role="dialog" data-backdrop="static">';
-    html += '<div class="modal-dialog">';
-    html += '<div class="modal-content">';
-    html += '<div class="modal-header login-header">';
-    html += '<h4 class="modal-title">Session out</h4>';
-    html += '</div>';
-    html += '<div class="modal-body">';
-    html += 'セッションが切れました。アプリを再起動して下さい。';
-    html += '</div>';
-    html += '<div class="modal-footer">';
-    html += '<button type="button" class="btn btn-primary" id="b-session-relogin-ok" >Close</button>';
-    html += '</div>';
-    html += '</div>';
-    html += '</div>';
-    html += '</div>';
+    var html = [
+        '<div id="modal-session-expired" class="modal fade" role="dialog" data-backdrop="static">',
+            '<div class="modal-dialog">',
+                '<div class="modal-content">',
+                    '<div class="modal-header login-header">',
+                        '<h4 class="modal-title">Session out</h4>',
+                    '</div>',
+                    '<div class="modal-body" data-i18n="expiredSession">',
+                    '</div>',
+                    '<div class="modal-footer">',
+                        '<button type="button" class="btn btn-primary" id="b-session-relogin-ok" >OK</button>',
+                    '</div>',
+                '</div>',
+            '</div>',
+        '</div>'
+    ].join("");
 
     modal = $(html);
     $(document.body).append(modal);
@@ -87,6 +106,30 @@ Common.refreshToken = function() {
             sessionStorage.setItem("ISRefExpires", data.refresh_token_expires_in);
         });
     });
+};
+
+Common.checkParam = function() {
+    var msg = "";
+    if (Common.target === null) {
+        msg = 'msg.error.targetCellNotSelected';
+    } else if (Common.token === null) {
+        msg = 'msg.error.tokenMissing';
+    } else if (Common.refToken === null) {
+        msg = 'msg.error.refreshTokenMissing';
+    } else if (Common.expires === null) {
+        msg = 'msg.error.tokenExpiryDateMissing';
+    } else if (Common.refExpires === null) {
+        msg = 'msg.error.refreshTokenExpiryDateMissing';
+    }
+
+    if (msg.length > 0) {
+        $('#errorMsg').attr("data-i18n", msg).localize();
+        $('#errorMsg').css("display", "block");
+        $("#exeSearch").prop('disabled', true);
+        return false;
+    }
+
+    return true;
 };
 
 Common.refreshTokenAPI = function(appCellToken) {

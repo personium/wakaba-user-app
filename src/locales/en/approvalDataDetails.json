@@ -1,0 +1,6 @@
+{
+    "stopOffering": "Stop offering"
+   ,"dataBeingProvided": "Data being provided"
+   ,"dataProvisionEnded": "Data provision ended."
+   ,"failedDataProvisionEnded": "Failed to terminate data provision.\n{{msg}}"
+}

@@ -1,0 +1,13 @@
+{
+    "provide": "提供する"
+   ,"rejectRequest": "リクエストを拒否"
+   ,"dataRequest": "データリクエスト"
+   ,"selectProvideDataMessage": "提供するデータを選んでください。"
+   ,"consenteesNumber": "{{num}} / {{den}}人"
+   ,"approvedRequest": "データ提供依頼が承認されました。"
+   ,"requestApproved": "データ提供依頼を承認しました。"
+   ,"alreadyRequestApproved": "データ提供要求は既に承認されています。"
+   ,"failedRequestApproved": "データ提供依頼の回答に失敗しました。<br>{{msg}}"
+   ,"refusedDataProvision": "データ提供依頼を拒否しました。"
+   ,"failedRefusedDataProvision": "データ提供依頼の拒否に失敗しました。<br>{{msg}}"
+}

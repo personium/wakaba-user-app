@@ -1,0 +1,22 @@
+{
+    "title": "データ提供リクエスト"
+   ,"notSubject": "件名なし"
+   ,"description": "説明"
+   ,"purposeOfUse": "利用目的"
+   ,"dataSetLabel": "{{name}}のデータ一式"
+   ,"cancelDataProvision": "データ提供がキャンセルされました。"
+   ,"provideData": {
+       "sex": "性別"
+      ,"age": "年齢"
+      ,"area": "地域"
+      ,"stress": {
+           "stressData": "ストレスデータ"
+          ,"comment": "コメント"
+      }
+      ,"calsml": {
+           "mealRecord": "食事記録（写真）"
+          ,"shootingDate": "撮影日時"
+          ,"comment": "コメント"
+      }
+   }
+}

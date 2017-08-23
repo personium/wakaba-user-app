@@ -1,14 +1,30 @@
 var ad = {};
 
 $(document).ready(function() {
+    i18next
+    .use(i18nextXHRBackend)
+    .use(i18nextBrowserLanguageDetector)
+    .init({
+        fallbackLng: 'en',
+        ns: ['common', 'glossary', 'approvalDataDetails'],
+        defaultNS: 'common',
+        debug: true,
+        backend: {
+            // load from i18next-gitbook repo
+            loadPath: './locales/{{lng}}/{{ns}}.json',
+            crossDomain: true
+        }
+    }, function(err, t) {
+        Common.initJqueryI18next();
+        
+        Common.createSessionExpired();
+        ad.additionalCallback();
+        
+        Common.updateContent();
+    });
+});
 
-  var appUrlMatch = location.href.split("#");
-  var appUrlSplit = appUrlMatch[0].split("/");
-  ad.appUrl = appUrlSplit[0] + "//" + appUrlSplit[2] + "/" + appUrlSplit[3] + "/";
-  if (appUrlSplit[0].indexOf("file:") == 0) {
-    ad.appUrl = "https://demo.personium.io/hn-ll-app/";
-  }
-
+ad.additionalCallback = function() {
   var hash = location.hash.substring(1);
   var params = hash.split("&");
   for (var i in params) {
@@ -38,7 +54,7 @@ $(document).ready(function() {
     }
   }
 
-  if (ad.checkParam()) {
+  if (Common.checkParam()) {
     ad.getProfile().done(function(response){
       var displayName = response.DisplayName;
       var displayImage = response.Image
@@ -48,7 +64,7 @@ $(document).ready(function() {
       console.log(JSON.stringify(response));
     });
 
-    //メッセージ情報を取得
+    // Retrieve message information
     ad.getApprovalMessage().done(function(res){
       console.log(res);
       var relName = res.d.results.RequestRelation.split("/");
@@ -71,41 +87,31 @@ $(document).ready(function() {
       if (messageBodyImgUrl != null) {
         $('img#randomImage').attr({"src":messageBodyImgUrl});
       }
-      $('#requestText').html('<h3>説明</h3><div class="sizeCaption">' + messageBodyText + '</div>');
-      $('#requestUse').html('<h3>利用目的</h3><div class="sizeCaption">' + messageBodyUse + '</div>');
+      $('#requestText').html(messageBodyText);
+      $('#requestUse').html(messageBodyUse);
 
       var listHtml = "";
-      listHtml += '<h3>提供中のデータ</h3>';
+      listHtml += '<h3 data-i18n="approvalDataDetails:dataBeingProvided"></h3>';
       ad.getProfile().done(function(response){
         var displayName = response.DisplayName;
-        listHtml += '<div class="sizeBody" style="margin: 0 16px;">' + displayName + 'のデータ一式</div>'
+        listHtml += '<div class="sizeBody" style="margin: 0 16px;" id="dataSetLabel"></div>'
         listHtml += '<ul class="itemization">';
-        listHtml += '<li>性別</li>';
-        listHtml += '<li>年齢</li>';
-        listHtml += '<li>地域</li>';
+        listHtml += '<li data-i18n="glossary:provideData.sex"></li>';
+        listHtml += '<li data-i18n="glossary:provideData.age"></li>';
+        listHtml += '<li data-i18n="glossary:provideData.area"></li>';
         if (requestType == "2") {
-          listHtml += '<li>ストレスデータ</li>';
-          listHtml += '<li>コメント</li>';
+          listHtml += '<li data-i18n="glossary:provideData.stress.stressData"></li>';
+          listHtml += '<li data-i18n="glossary:provideData.stress.comment"></li>';
         } else {
-          listHtml += '<li>食事記録（写真）</li>';
-          listHtml += '<li>撮影日時</li>';
-          listHtml += '<li>コメント</li>';
+          listHtml += '<li data-i18n="glossary:provideData.calsml.mealRecord"></li>';
+          listHtml += '<li data-i18n="glossary:provideData.calsml.shootingDate"></li>';
+          listHtml += '<li data-i18n="glossary:provideData.calsml.comment"></li>';
         }
         listHtml += '</ul>';
-        $('#providedInfo').prepend(listHtml);
+        $('#providedInfo').prepend(listHtml).localize();
+        $('#dataSetLabel').attr("data-i18n", "glossary:dataSetLabel").localize({name: displayName});
       });
 
-/*
-      var requestType = pApprovalMessageBody.Type;
-      console.log(requestType);
-      var requestData = ""
-      if (requestType == "2") {
-        requestData = "ストレスデータ<br>性別<br>年齢<br>地域<br><br>";
-      } else {
-        requestData = "食事データ<br>性別<br>年齢<br>地域<br><br>";
-      }
-      $('#approvedDataList').html(requestData);
-*/
       if ( pApprovalMessageBody.sendCount == null ) {
         var denominator = Math.floor(Math.random() * 50) + 51
       } else {
@@ -115,7 +121,7 @@ $(document).ready(function() {
       $('#consenteesNumber').html(numerator + '/' + denominator);
     });
 
-    //データ提供をやめるボタンを押したとき
+    // When you push the button to stop providing data
     $('#rejectRequest').on('click', function() {
       var extCellUrl = encodeURIComponent(sessionStorage.getItem("ApprovalCellURL"));
       ad.deleteRelation$LinksListAPI(extCellUrl).done(function(){
@@ -123,10 +129,10 @@ $(document).ready(function() {
         rejectMessage.To = sessionStorage.getItem("ApprovalCellURL");
         rejectMessage.Type = "message";
         rejectMessage.Title = "RE: " + sessionStorage.getItem("ApprovalMessageTitle");
-        rejectMessage.Body = "データ提供がキャンセルされました";
+        rejectMessage.Body = i18next.t("glossary:cancelDataProvision");
         rejectMessage.InReplyTo = sessionStorage.getItem("ApprovalMessageID");
         ad.sendRejectMessage(rejectMessage).done(function(){
-          alert("データ提供を終了しました");
+          alert(i18next.t("approvalDataDetails:dataProvisionEnded"));
           location.href = "./LLMessage.html";
         });
       }).fail(function(response){
@@ -135,20 +141,20 @@ $(document).ready(function() {
           rejectMessage.To = sessionStorage.getItem("ApprovalCellURL");
           rejectMessage.Type = "message";
           rejectMessage.Title = "RE: " + sessionStorage.getItem("ApprovalMessageTitle");
-          rejectMessage.Body = "データ提供がキャンセルされました";
+          rejectMessage.Body = i18next.t("glossary:cancelDataProvision");
           rejectMessage.InReplyTo = sessionStorage.getItem("ApprovalMessageID");
           ad.sendRejectMessage(rejectMessage).done(function(){
-          alert("データ提供を終了しました");
+          alert(i18next.t("approvalDataDetails:dataProvisionEnded"));
           location.href = "./LLMessage.html";
           });
         } else {
-          alert("データ提供の終了に失敗しました\n" + JSON.stringify(response));
+          alert(i18next.t("failedDataProvisionEnded", {msg: JSON.stringify(response)}));
           location.href = "./LLMessage.html";
         }
       });
     });
   }
-});
+}
 
 ad.getProfile = function(){
   return $.ajax({
@@ -190,28 +196,4 @@ ad.getApprovalMessage = function(){
         'Authorization':'Bearer ' + Common.token,
         'Accept': 'application/json'},
       });
-    };
-
-  ad.checkParam = function() {
-    var msg = "";
-    if (Common.target === null) {
-      msg = '対象セルが設定されていません。';
-    } else if (Common.token === null) {
-      msg = 'トークンが設定されていません。';
-    } else if (Common.refToken === null) {
-      msg = 'リフレッシュトークンが設定されていません。';
-    } else if (Common.expires === null) {
-      msg = 'トークンの有効期限が設定されていません。';
-    } else if (Common.refExpires === null) {
-      msg = 'リフレッシュトークンの有効期限が設定されていません。';
-    }
-
-    if (msg.length > 0) {
-      $('#errorMsg').html(msg);
-      $('#errorMsg').css("display", "block");
-      $("#exeSearch").prop('disabled', true);
-      return false;
-    }
-
-    return true;
-  };
+};

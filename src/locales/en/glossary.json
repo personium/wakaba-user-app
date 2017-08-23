@@ -1,0 +1,22 @@
+{
+    "title": "Data provision request"
+   ,"notSubject": "No subject"
+   ,"description": "Description"
+   ,"purposeOfUse": "purpose of use"
+   ,"dataSetLabel": "{{name}} data set"
+   ,"cancelDataProvision": "Data provision has been canceled."
+   ,"provideData": {
+       "sex": "Sex"
+      ,"age": "Age"
+      ,"area": "Area"
+      ,"stress": {
+           "stressData": "Stress Data"
+          ,"comment": "Comment"
+      }
+      ,"calsml": {
+           "mealRecord": "Meal record (picture)"
+          ,"shootingDate": "Date and time of shooting"
+          ,"comment": "Comment"
+      }
+   }
+}
