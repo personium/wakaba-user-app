@@ -359,7 +359,7 @@ lm.getSingleReceivedMessageAPI = function(messageId) {
 lm.getSentMessageAPI = function(messageId) {
     return $.ajax({
         type: "GET",
-        url: Common.cellUrl + "__ctl/SentMessage?$filter=InReplyTo eq '" + messageId + "' and substringof('キャンセル', Body)",
+        url: Common.cellUrl + "__ctl/SentMessage?$filter=InReplyTo eq '" + messageId + "' and (substringof('キャンセル', Body) or substringof('canceled', Body))",
         headers: {
             'Authorization':'Bearer ' + Common.token,
             'Accept':'application/json'
