@@ -164,10 +164,15 @@ ad.getProfile = function(){
   });
 };
 
+/*
+ * API to delete relation link
+ * Since it is not possible to get BoxName in the current implementation,
+ * Implement temporarily as "https://demo.personium.io/hn-app-genki/" fixed
+ */
 ad.deleteRelation$LinksListAPI = function(extCellUrl) {
   return $.ajax({
     type: "DELETE",
-    url: Common.cellUrl + '__ctl/Relation(\'' + sessionStorage.getItem("RelName") + '\')/$links/_ExtCell(\'' + extCellUrl + '\')?$orderby=__published%20desc',
+    url: Common.cellUrl + '__ctl/Relation(Name=\'' + sessionStorage.getItem("RelName") + '\',_Box.Name=\'io_personium_demo_hn-app-genki\')/$links/_ExtCell(\'' + extCellUrl + '\')?$orderby=__published%20desc',
     headers: {
       'Authorization':'Bearer ' + Common.token,
       'Accept':'application/json'
@@ -185,7 +190,7 @@ ad.sendRejectMessage = function(rejectMessage){
       'Accept': 'application/json'},
       data: JSON.stringify(rejectMessage)
     });
-  };
+};
 
 ad.getApprovalMessage = function(){
     return $.ajax({
