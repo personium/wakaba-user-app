@@ -109,7 +109,7 @@ ad.additionalCallback = function() {
         }
         listHtml += '</ul>';
         $('#providedInfo').prepend(listHtml).localize();
-        $('#dataSetLabel').attr("data-i18n", "glossary:dataSetLabel").localize({name: displayName});
+        $('#dataSetLabel').attr("data-i18n", "[html]glossary:dataSetLabel").localize({name: displayName});
       });
 
       if ( pApprovalMessageBody.sendCount == null ) {
