@@ -139,6 +139,9 @@ lm.getReceiveMessage = function() {
             var from = results[i].From;
             var unixTime = results[i].__updated
             unixTime = parseInt(unixTime.replace(/[^0-9^]/g,""));
+            if (!results[i].RequestRelation) {
+                continue;
+            }
             var tmpRelationName = results[i].RequestRelation.split("/")
             var relationName = tmpRelationName[tmpRelationName.length - 1];
             var changedDate = lm.changeUnixTime(unixTime);
