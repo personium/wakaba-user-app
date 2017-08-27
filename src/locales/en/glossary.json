@@ -6,17 +6,17 @@
    ,"dataSetLabel": "{{name}} data set"
    ,"cancelDataProvision": "Data provision has been canceled."
    ,"provideData": {
-       "sex": "Sex"
+       "sex": "Gender"
       ,"age": "Age"
-      ,"area": "Area"
+      ,"area": "Location"
       ,"stress": {
            "stressData": "Stress Data"
-          ,"comment": "Comment"
+          ,"comment": "Comments"
       }
       ,"calsml": {
-           "mealRecord": "Meal record (picture)"
-          ,"shootingDate": "Date and time of shooting"
-          ,"comment": "Comment"
+           "mealRecord": "Food diary (picture)"
+          ,"shootingDate": "Date & time taken"
+          ,"comment": "Comments"
       }
    }
 }

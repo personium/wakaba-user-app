@@ -1,8 +1,8 @@
 {
     "title": "Message List"
-   ,"wakabaCity": "Wakaba Municipality"
-   ,"dataProvidingNow": "Data providing now"
-   ,"dataProvisionRequest": "Data provision request"
-   ,"dataProvided": "Data provided in the past"
+   ,"wakabaCity": "City of Wakaba"
+   ,"dataProvidingNow": "List of Data Consumers (active)"
+   ,"dataProvisionRequest": "List of Requests from Data Consumers"
+   ,"dataProvided": "List of Data Consumers (expired)"
    ,"more": "more"
 }
