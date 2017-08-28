@@ -134,7 +134,7 @@ rr.getReceiveMessage = function() {
                 var displayImage = response.Image
                 $('img#requestIcon').attr({"src":displayImage});
                 $('#requestName').html(displayName);
-                $('#data01Label').attr("data-i18n", "glossary:dataSetLabel").localize({name: displayName});
+                $('#data01Label').attr("data-i18n", "[html]glossary:dataSetLabel").localize({name: displayName});
             }).fail(function(response){
                 console.log(JSON.stringify(response));
             });
