@@ -140,12 +140,31 @@ lm.getReceiveMessage = function() {
             var unixTime = results[i].__updated
             unixTime = parseInt(unixTime.replace(/[^0-9^]/g,""));
             if (!results[i].RequestRelation) {
+                /*
+                 * https://personium.github.io/en/apiref/1.5.2/267_Received_Message_Approval.html
+                 * Reject message with unread/read status.
+                 */
+                continue;
+            }
+            if (lm.invalidBox(results[i]["_Box.Name"])) {
+                // Currently messages between data subject and data consumer does not support box name.
+                continue;
+            }
+            var tmpBody = results[i].Body;
+            tmpBody = tmpBody.substr(1);
+            tmpBody = tmpBody.substr(0, tmpBody.length - 1);
+            var messageBody;
+            try {
+                messageBody = JSON.parse(tmpBody);
+            } catch(ex) {
+                console.log(ex);
                 continue;
             }
             var tmpRelationName = results[i].RequestRelation.split("/")
             var relationName = tmpRelationName[tmpRelationName.length - 1];
             var changedDate = lm.changeUnixTime(unixTime);
-            if (results[i].Status == "approved") {
+            switch(results[i].Status) {
+            case "approved":
                 var targetCell = results[i].From;
                 var prof = lm.getProfile(targetCell).done(function(prof) {
                 });
@@ -154,66 +173,14 @@ lm.getReceiveMessage = function() {
                 var replay = lm.getSentMessageAPI(id).done(function(message){
                 });
                 $.when( prof, message, replay).done(function ( prof, message, replay) {
-                    var tmpBody = message[0].d.results.Body;
-                    tmpBody = tmpBody.substr(1);
-                    tmpBody = tmpBody.substr(0, tmpBody.length - 1);
-                    messageBody = JSON.parse(tmpBody);
-                    if (replay[0].d.results.length == 0 ){
-                        var targetImage = prof[0].Image;
-                        var targetName = prof[0].DisplayName
-                        var messageFrom = message[0].d.results.From;
-                        var tmpDate = message[0].d.results.__updated;
-                        tmpDate = parseInt(tmpDate.replace(/[^0-9^]/g,""));
-                        var messageDate = lm.changeUnixTime(tmpDate);
-                        var messageTitle = message[0].d.results.Title;
-                        var messageId = message[0].d.results.__id;
-                        if ( messageBody.sendCount == null ) {
-                            var denominator = Math.floor(Math.random() * 50) + 51
-                        } else {
-                            var denominator = messageBody.sendCount;
-                        }
-                        var numerator = Math.floor(Math.random() * denominator);
-                        offerHtml = ""
-                        offerHtml += '<li>';
-                        offerHtml += '<a onClick="lm.moveApprovalDetails(\'' + messageFrom + '\', \'' + messageId + '\', \'' + numerator + '\');return false;" href="javascript:void(0)">';
-                        offerHtml += '<div class="list-icon">';
-                        offerHtml += '<img id="targetIcon" width="24" height="24"/>';
-                        offerHtml += '</div>';
-                        offerHtml += '<div class="list-body">';
-                        offerHtml += '<div class="sizeBody">' + messageTitle + '</div>';
-                        offerHtml += '<div class="sizeCaption" id="targetName"></div>';
-                        offerHtml += '<div class="sizeCaption">' + messageDate + '</div>';
-                        offerHtml += '</div>';
-                        offerHtml += '<div class="sizeCaption">' + numerator + '/' + denominator +  '</div>';
-                        offerHtml += '</a>';
-                        offerHtml += '</li>';
-                        if (lm.isExpired(messageBody.TermEnd)){
-                            $("#approvedList").append(offerHtml);
-                            $('#targetName').html(targetName);
-                            $('#targetName').attr({"id":"targetNameSet"});
-                            $('#targetIcon').attr({"src":targetImage});
-                            $('#targetIcon').attr({"id":"requestIconSet"});
-                        } else {
-                            $("#providedList").append(offerHtml);
-                            $('#targetName').html(targetName);
-                            $('#targetName').attr({"id":"targetNameSet"});
-                            $('#targetIcon').attr({"src":targetImage});
-                            $('#targetIcon').attr({"id":"requestIconSet"});
-                        }
-                    }
+                    lm.dispReceivedMessage(prof, message, replay);
                 });
-            }
-            if (results[i].Status !== "approved" && results[i].Status !== "rejected") {
-                var tmpBody = results[i].Body;
-                tmpBody = tmpBody.substr(1);
-                tmpBody = tmpBody.substr(0, tmpBody.length - 1);
-                messageBody = JSON.parse(tmpBody);
-
+                break;
+            case "rejected":
+                // do nothing
+                break;
+            default:
                 if (lm.showExpiredMessage || lm.isExpired(messageBody.TermEnd)) {
-                    var tmpBody = results[i].Body;
-                    tmpBody = tmpBody.substr(1);
-                    tmpBody = tmpBody.substr(0, tmpBody.length - 1);
-                    messageBody = JSON.parse(tmpBody);
                     if ( messageBody.sendCount == null ) {
                         var denominator = Math.floor(Math.random() * 50) + 51
                     } else {
@@ -235,7 +202,8 @@ lm.getReceiveMessage = function() {
                     html += '</li>';
                     lm.profileList.push(lm.getProfile(from));
                 }
-            }
+
+            };
         }
         lm.setProfile();
         if (html.length > 0) {
@@ -244,6 +212,65 @@ lm.getReceiveMessage = function() {
         }
     });
 };
+
+lm.invalidBox = function(boxName) {
+    if (boxName) {
+        return true;
+    } else {
+        // Box name is always null for current implementation 
+        return false;
+    }
+}
+
+lm.dispReceivedMessage = function(prof, message, replay) {
+    var tmpBody = message[0].d.results.Body;
+    tmpBody = tmpBody.substr(1);
+    tmpBody = tmpBody.substr(0, tmpBody.length - 1);
+    messageBody = JSON.parse(tmpBody);
+    if (replay[0].d.results.length == 0 ){
+        var targetImage = prof[0].Image;
+        var targetName = prof[0].DisplayName
+        var messageFrom = message[0].d.results.From;
+        var tmpDate = message[0].d.results.__updated;
+        tmpDate = parseInt(tmpDate.replace(/[^0-9^]/g,""));
+        var messageDate = lm.changeUnixTime(tmpDate);
+        var messageTitle = message[0].d.results.Title;
+        var messageId = message[0].d.results.__id;
+        if ( messageBody.sendCount == null ) {
+            var denominator = Math.floor(Math.random() * 50) + 51
+        } else {
+            var denominator = messageBody.sendCount;
+        }
+        var numerator = Math.floor(Math.random() * denominator);
+        offerHtml = ""
+        offerHtml += '<li>';
+        offerHtml += '<a onClick="lm.moveApprovalDetails(\'' + messageFrom + '\', \'' + messageId + '\', \'' + numerator + '\');return false;" href="javascript:void(0)">';
+        offerHtml += '<div class="list-icon">';
+        offerHtml += '<img id="targetIcon" width="24" height="24"/>';
+        offerHtml += '</div>';
+        offerHtml += '<div class="list-body">';
+        offerHtml += '<div class="sizeBody">' + messageTitle + '</div>';
+        offerHtml += '<div class="sizeCaption" id="targetName"></div>';
+        offerHtml += '<div class="sizeCaption">' + messageDate + '</div>';
+        offerHtml += '</div>';
+        offerHtml += '<div class="sizeCaption">' + numerator + '/' + denominator +  '</div>';
+        offerHtml += '</a>';
+        offerHtml += '</li>';
+        if (lm.isExpired(messageBody.TermEnd)){
+            $("#approvedList").append(offerHtml);
+            $('#targetName').html(targetName);
+            $('#targetName').attr({"id":"targetNameSet"});
+            $('#targetIcon').attr({"src":targetImage});
+            $('#targetIcon').attr({"id":"requestIconSet"});
+        } else {
+            $("#providedList").append(offerHtml);
+            $('#targetName').html(targetName);
+            $('#targetName').attr({"id":"targetNameSet"});
+            $('#targetIcon').attr({"src":targetImage});
+            $('#targetIcon').attr({"id":"requestIconSet"});
+        }
+    }
+}
 
 lm.setProfile = function() {
     $.when.apply($, lm.profileList).done(function () {
