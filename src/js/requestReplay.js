@@ -1,70 +1,11 @@
 var rr = {};
 
-$(document).ready(function() {
-    i18next
-    .use(i18nextXHRBackend)
-    .use(i18nextBrowserLanguageDetector)
-    .init({
-        fallbackLng: 'en',
-        ns: ['common', 'glossary', 'requestReplay'],
-        defaultNS: 'common',
-        debug: true,
-        backend: {
-            // load from i18next-gitbook repo
-            loadPath: './locales/{{lng}}/{{ns}}.json',
-            crossDomain: true
-        }
-    }, function(err, t) {
-        Common.initJqueryI18next();
-        
-        Common.createSessionExpired();
-        rr.additionalCallback();
-        
-        Common.updateContent();
-    });
-});
+getNamesapces = function() {
+    return ['common', 'glossary', 'requestReplay'];
+};
 
-rr.additionalCallback = function() {
-    var appUrlMatch = location.href.split("#");
-    var appUrlSplit = appUrlMatch[0].split("/");
-    rr.appUrl = appUrlSplit[0] + "//" + appUrlSplit[2] + "/" + appUrlSplit[3] + "/";
-    if (appUrlSplit[0].indexOf("file:") == 0) {
-        rr.appUrl = "https://demo.personium.io/hn-ll-app/";
-    }
-
-    var hash = location.hash.substring(1);
-    var params = hash.split("&");
-    for (var i in params) {
-        var param = params[i].split("=");
-        var id = param[0];
-        switch (id) {
-            case "target":
-                Common.target = param[1];
-                sessionStorage.setItem("ISTarget", param[1]);
-                var urlSplit = param[1].split("/");
-                Common.cellUrl = urlSplit[0] + "//" + urlSplit[2] + "/" + urlSplit[3] + "/";
-                sessionStorage.setItem("ISCellUrl", Common.cellUrl);
-                var split = Common.target.split("/");
-                lm.boxName = split[split.length - 1];
-            case "token":
-                Common.token = param[1];
-                sessionStorage.setItem("ISToken", param[1]);
-            case "ref":
-                Common.refToken = param[1];
-                sessionStorage.setItem("ISRefToken", param[1]);
-            case "expires":
-                Common.expires = param[1];
-                sessionStorage.setItem("ISExpires", param[1]);
-            case "refexpires":
-                Common.refExpires = param[1];
-                sessionStorage.setItem("ISRefExpires", param[1]);
-        }
-    }
-
-    if (Common.checkParam()) {
-       rr.getReceiveMessage();
-    }
-
+additionalCallback = function() {
+    rr.getReceiveMessage();
     Common.setIdleTime();
 }
 
