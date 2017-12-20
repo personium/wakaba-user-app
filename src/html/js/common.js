@@ -13,6 +13,9 @@ Common.IDLE_TIMEOUT =  3600000;
 Common.IDLE_CHECK = 3300000;
 Common.LASTACTIVITY = new Date().getTime();
 const APP_URL = "https://demo.personium.io/hn-ll-user-app/";
+getEngineEndPoint = function() {
+    return Common.appUrl + "__/html/Engine/getAppAuthToken";
+};
 
 $(document).ready(function() {
     i18next
@@ -174,24 +177,22 @@ Common.checkIdleTime = function() {
 };
 
 Common.refreshToken = function(callback) {
-    Common.getLaunchJson().done(function(launchObj){
-        Common.getAppToken(launchObj.personal).done(function(appToken) {
-            Common.getAppCellToken(appToken.access_token).done(function(data) {
-                Common.token = data.access_token;
-                Common.refToken = data.refresh_token;
-                Common.expires = data.expires_in;
-                Common.refExpires = data.refresh_token_expires_in;
-                sessionStorage.setItem("ISToken", data.access_token);
-                sessionStorage.setItem("ISRefToken", data.refresh_token);
-                sessionStorage.setItem("ISExpires", data.expires_in);
-                sessionStorage.setItem("ISRefExpires", data.refresh_token_expires_in);
+    Common.getAppAuthToken(Common.cellUrl).done(function(appToken) {
+        Common.getAppCellToken(appToken.access_token).done(function(data) {
+            Common.token = data.access_token;
+            Common.refToken = data.refresh_token;
+            Common.expires = data.expires_in;
+            Common.refExpires = data.refresh_token_expires_in;
+            sessionStorage.setItem("ISToken", data.access_token);
+            sessionStorage.setItem("ISRefToken", data.refresh_token);
+            sessionStorage.setItem("ISExpires", data.expires_in);
+            sessionStorage.setItem("ISRefExpires", data.refresh_token_expires_in);
     
-                if ((typeof callback !== "undefined") && $.isFunction(callback)) {
-                    callback();
-                };
-            }).fail(function(data) {
-                $('#modal-session-expired').modal('show');
-            });
+            if ((typeof callback !== "undefined") && $.isFunction(callback)) {
+                callback();
+            };
+        }).fail(function(data) {
+            $('#modal-session-expired').modal('show');
         });
     });
 };
@@ -214,16 +215,18 @@ Common.checkParam = function() {
     return true;
 };
 
-Common.getLaunchJson = function() {
+// Get App Authentication Token
+Common.getAppAuthToken = function(cellUrl) {
+    let engineEndPoint = getEngineEndPoint();
     return $.ajax({
-        type: "GET",
-        url: Common.appUrl + "__/launch.json",
-        headers: {
-            'Authorization':'Bearer ' + Common.token,
-            'Accept':'application/json'
-        }
+        type: "POST",
+        url: engineEndPoint,
+        data: {
+                p_target: cellUrl
+        },
+        headers: {'Accept':'application/json'}
     });
-}
+};
 
 Common.getAppCellToken = function(appCellToken) {
     return $.ajax({
@@ -240,22 +243,6 @@ Common.getAppCellToken = function(appCellToken) {
         headers: {'Accept':'application/json'}
     })
 };
-
-Common.getAppToken = function(personalInfo) {
-    return $.ajax({
-            type: "POST",
-            url: Common.appUrl + "__token",
-            processData: true,
-            dataType: 'json',
-            data: {
-                    grant_type: "password",
-                    username: personalInfo.appTokenId,
-                    password: personalInfo.appTokenPw,
-                    p_target: Common.cellUrl
-              },
-		      headers: {'Accept':'application/json'}
-    });
-}
 
 Common.getTargetToken = function(extCellUrl) {
   return $.ajax({
