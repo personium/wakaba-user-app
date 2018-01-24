@@ -1,9 +1,7 @@
 {
   "personal": {
      "web": "https://demo.personium.io/hn-ll-user-app/__/html/LLMessage.html",
-     "android": "wakabaUserApp:",
-     "ios": "wakabaUserApp:",
-     "appTokenId": "tokenAcc",
-     "appTokenPw": "personiumtoken"
+     "android": "***:",
+     "ios": "***:"
   }
 }
