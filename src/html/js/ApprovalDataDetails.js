@@ -17,7 +17,11 @@ additionalCallback = function() {
     // Retrieve message information
     ad.getApprovalMessage().done(function(res){
       console.log(res);
-      var relName = res.d.results.RequestRelation.split("/");
+      var relName = res.d.results.RequestRelation;
+      if (!relName) {
+          relName = results[i].RequestObjects[0].Name;
+      }
+      relName = relName.split("/");
       var approvalMessageTitle = res.d.results.Title;
       console.log(approvalMessageTitle);
       sessionStorage.setItem("RelName", relName[relName.length - 1]);
