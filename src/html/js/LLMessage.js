@@ -75,7 +75,7 @@ lm.getReceiveMessage = function() {
             var from = results[i].From;
             var unixTime = results[i].__updated
             unixTime = parseInt(unixTime.replace(/[^0-9^]/g,""));
-            if (!results[i].RequestRelation && (!results[i].RequestObjects || !results[i].RequestObjects[0].Name)) {
+            if (!results[i].RequestObjects || !results[i].RequestObjects[0].Name) {
                 /*
                  * https://personium.github.io/en/apiref/1.5.2/267_Received_Message_Approval.html
                  * Reject message with unread/read status.
