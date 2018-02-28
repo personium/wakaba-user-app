@@ -17,6 +17,17 @@ getEngineEndPoint = function() {
     return Common.appUrl + "__/html/Engine/getAppAuthToken";
 };
 
+// Make sure Unit/Cell/Box URL contains ending slash ('/')  
+Common.preparePersoniumUrl = function(url) {  
+    let tempUrl = url;  
+  
+    if (url.slice(-1) != '/') {  
+        tempUrl = url + '/';  
+    }  
+  
+    return tempUrl;  
+};
+
 $(document).ready(function() {
     i18next
     .use(i18nextXHRBackend)
@@ -46,7 +57,7 @@ $(document).ready(function() {
             Common.getBoxUrlAPI().done(function(data, textStatus, request) {
                 let boxUrl = request.getResponseHeader("Location");
                 console.log(boxUrl);
-                Common.boxUrl = boxUrl + "/";
+                Common.boxUrl = Common.preparePersoniumUrl(boxUrl);
                 if ((typeof additionalCallback !== "undefined") && $.isFunction(additionalCallback)) {
                     additionalCallback();
                 }
