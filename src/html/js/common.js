@@ -13,6 +13,7 @@ Common.IDLE_TIMEOUT =  3600000;
 Common.IDLE_CHECK = 3300000;
 Common.LASTACTIVITY = new Date().getTime();
 const APP_URL = "https://demo.personium.io/hn-ll-user-app/";
+const APP_BOX_NAME = 'io_personium_demo_hn-ll-user-app';
 getEngineEndPoint = function() {
     return Common.appUrl + "__/html/Engine/getAppAuthToken";
 };
@@ -55,7 +56,12 @@ $(document).ready(function() {
 
         Common.refreshToken(function() {
             Common.getBoxUrlAPI().done(function(data, textStatus, request) {
-                let boxUrl = request.getResponseHeader("Location");
+                let tempInfo = {
+                    data: data,
+                    request: request,
+                    targetCellUrl: Common.cellUrl
+                };
+                let boxUrl = Common.getBoxUrlFromResponse(tempInfo);
                 console.log(boxUrl);
                 Common.boxUrl = Common.preparePersoniumUrl(boxUrl);
                 if ((typeof additionalCallback !== "undefined") && $.isFunction(additionalCallback)) {
@@ -81,6 +87,19 @@ Common.initJqueryI18next = function() {
         useOptionsAttr: true
     });
 }
+
+/*
+ * Currently the REST API does not support CORS.
+ * Therefore, for CORS case, the default Box name is used.
+ */
+Common.getBoxUrlFromResponse = function(info) {
+    let urlFromHeader = info.request.getResponseHeader("Location");
+    let urlFromBody = info.data.Url;
+    let urlDefaultBox = info.targetCellUrl + APP_BOX_NAME;
+    let boxUrl = urlFromHeader || urlFromBody || urlDefaultBox;
+    
+    return boxUrl;
+};
 
 Common.setAppCellUrl = function() {
     var appUrlSplit = _.first(location.href.split("#")).split("/");
