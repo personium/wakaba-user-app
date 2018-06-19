@@ -2,10 +2,10 @@ exports.accInfo = (function() {
     /*
      * Begin of your Personium app configurations
      */
-    var rootUrl = 'https://demo.personium.io'; // for example: https://demo.personium.io
-    var appCellName = 'hn-ll-user-app'; // for example: app-minimal
-    var appUserId = 'tokenAcc';
-    var appUserPass = 'personiumtoken';
+    var rootUrl = '***'; // for example: https://demo.personium.io
+    var appCellName = '***'; // for example: app-minimal
+    var appUserId = '***';
+    var appUserPass = '***';
     /*
      * End of your Personium app configurations
      */
