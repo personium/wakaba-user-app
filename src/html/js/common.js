@@ -263,8 +263,6 @@ Common.checkParam = function() {
     var msg = "";
     if (Common.cellUrl === null) {
         msg = 'msg.error.targetCellNotSelected';
-    } else if (Common.refToken === null) {
-        msg = 'msg.error.refreshTokenMissing';
     }
 
     if (msg.length > 0) {
