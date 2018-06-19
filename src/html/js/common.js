@@ -17,6 +17,9 @@ const APP_BOX_NAME = 'io_personium_demo_hn-ll-user-app';
 getEngineEndPoint = function() {
     return Common.appUrl + "__/html/Engine/getAppAuthToken";
 };
+getStartOAuth2EngineEndPoint = function() {
+    return Common.appUrl + "__/html/Engine/start_oauth2";
+};
 
 // Make sure Unit/Cell/Box URL contains ending slash ('/')  
 Common.preparePersoniumUrl = function(url) {  
@@ -54,7 +57,7 @@ $(document).ready(function() {
             return;
         }
 
-        Common.refreshToken(function() {
+        Common.startOAuth2(function() {
             Common.getBoxUrlAPI().done(function(data, textStatus, request) {
                 let tempInfo = {
                     data: data,
@@ -206,17 +209,36 @@ Common.checkIdleTime = function() {
   }
 };
 
+Common.startOAuth2 = function(callback) {
+    let endPoint = getStartOAuth2EngineEndPoint();
+    let cellUrl = Common.cellUrl;
+    let params = $.param({
+        cellUrl: cellUrl
+    });
+    $.ajax({
+        type: "POST",
+        xhrFields: {
+            withCredentials: true
+        },
+        url: endPoint + "?" + params,
+        headers: {
+            'Accept':'application/json'
+        }
+    }).done(function(appCellToken) {
+        // update sessionStorage
+        Common.updateSessionStorage(appCellToken);
+        if ((typeof callback !== "undefined") && $.isFunction(callback)) {
+            callback();
+        };
+    }).fail(function(error) {
+        console.log(error.responseJSON);
+        $('#modal-session-expired').modal('show');
+    });
+}
 Common.refreshToken = function(callback) {
     Common.getAppAuthToken(Common.cellUrl).done(function(appToken) {
         Common.getAppCellToken(appToken.access_token).done(function(data) {
-            Common.token = data.access_token;
-            Common.refToken = data.refresh_token;
-            Common.expires = data.expires_in;
-            Common.refExpires = data.refresh_token_expires_in;
-            sessionStorage.setItem("ISToken", data.access_token);
-            sessionStorage.setItem("ISRefToken", data.refresh_token);
-            sessionStorage.setItem("ISExpires", data.expires_in);
-            sessionStorage.setItem("ISRefExpires", data.refresh_token_expires_in);
+            Common.updateSessionStorage(data);
     
             if ((typeof callback !== "undefined") && $.isFunction(callback)) {
                 callback();
@@ -226,13 +248,21 @@ Common.refreshToken = function(callback) {
         });
     });
 };
+Common.updateSessionStorage = function(data) {
+    Common.token = data.access_token;
+    Common.refToken = data.refresh_token;
+    Common.expires = data.expires_in;
+    Common.refExpires = data.refresh_token_expires_in;
+    sessionStorage.setItem("ISToken", data.access_token);
+    sessionStorage.setItem("ISRefToken", data.refresh_token);
+    sessionStorage.setItem("ISExpires", data.expires_in);
+    sessionStorage.setItem("ISRefExpires", data.refresh_token_expires_in);
+}
 
 Common.checkParam = function() {
     var msg = "";
     if (Common.cellUrl === null) {
         msg = 'msg.error.targetCellNotSelected';
-    } else if (Common.refToken === null) {
-        msg = 'msg.error.refreshTokenMissing';
     }
 
     if (msg.length > 0) {
