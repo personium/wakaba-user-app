@@ -300,7 +300,10 @@ Common.getAppCellToken = function(appCellToken) {
                client_id: "https://demo.personium.io/hn-ll-user-app/",
                client_secret: appCellToken
         },
-        headers: {'Accept':'application/json'}
+        headers: {
+            'Accept':'application/json',
+            'content-type': 'application/x-www-form-urlencoded'
+        }
     })
 };
 
@@ -315,6 +318,9 @@ Common.getTargetToken = function(extCellUrl) {
                         refresh_token: Common.refToken,
                         p_target: extCellUrl
                 },
-		headers: {'Accept':'application/json'}
+		headers: {
+            'Accept':'application/json',
+            'content-type': 'application/x-www-form-urlencoded'
+        }
          });
 };
